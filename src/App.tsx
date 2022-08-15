@@ -2,6 +2,7 @@ import React from "react";
 import MainNavbar from "./components/MainNavbar";
 import "./App.css";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import MainFooter from "./components/MainFooter";
 
 const theme = createTheme({
   palette: {
@@ -17,6 +18,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <>
         <MainNavbar />
+        <MainFooter />
       </>
     </ThemeProvider>
   );
