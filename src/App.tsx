@@ -7,6 +7,16 @@ import MainFooter from "./components/MainFooter";
 const theme = createTheme({
   palette: {
     primary: { main: "#3385ff" },
+    background: {
+      default: "#f5faff",
+    },
+    secondary: {
+      main: "#f5faff",
+      contrastText: "rgb(31, 45, 51)",
+    },
+    text: {
+      primary: "rgb(31, 45, 51)",
+    },
   },
   shape: {
     borderRadius: 10,
