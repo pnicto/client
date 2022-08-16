@@ -46,3 +46,18 @@ body {
   text-transform: capitalize;
   margin-bottom: 0.4rem;
 }
+
+/* Main Footer */
+
+#main-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+#main-footer button{
+  margin-right: 1rem;
+  text-transform: capitalize;
+}
