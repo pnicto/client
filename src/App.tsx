@@ -1,6 +1,6 @@
 import React from "react";
 import MainNavbar from "./components/MainNavbar";
-import "./App.css";
+import "./App.scss";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import MainFooter from "./components/MainFooter";
 
