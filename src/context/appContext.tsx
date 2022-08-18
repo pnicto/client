@@ -8,7 +8,9 @@ type Props = {
 };
 
 const AppProvider = ({ children }: Props) => {
-  const [state, setState] = useState<globalContextInterface | {}>({});
+  const [state, setState] = useState<globalContextInterface>(
+    {} as globalContextInterface
+  );
   useEffect(() => {
     const fetchAllTasksboards = async () => {
       const url = `${process.env.REACT_APP_BASE_URL}/tasksboards`;
@@ -28,13 +30,13 @@ const AppProvider = ({ children }: Props) => {
   }, []);
   return (
     <>
-      <AppContext.Provider value={{ ...state }}>{children}</AppContext.Provider>
+      <AppContext.Provider value={state}>{children}</AppContext.Provider>
     </>
   );
 };
 
-const useGlobalContext = () => {
-  return useContext(AppContext);
+const useGlobalContext = (): globalContextInterface => {
+  return useContext(AppContext) as globalContextInterface;
 };
 
 export { useGlobalContext, AppProvider };
