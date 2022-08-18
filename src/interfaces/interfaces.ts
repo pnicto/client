@@ -1,10 +1,19 @@
+import React from "react";
+
 interface Tasksboard {
   id: number;
   boardTitle: string;
 }
 
 interface globalContextInterface {
-  activeTasksboardId: number;
+  globalState: globalState;
+  setGlobalState: React.Dispatch<React.SetStateAction<globalState>>;
 }
 
-export type { Tasksboard, globalContextInterface };
+interface globalState {
+  activeTasksboardId: number;
+  tasksboards: Tasksboard[];
+  isLoading: boolean;
+}
+
+export type { Tasksboard, globalContextInterface, globalState };
