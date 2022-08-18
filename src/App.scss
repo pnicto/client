@@ -1,9 +1,9 @@
 /* Variables */
-:root {
-  --white: hsl(210, 100%, 98%);
-  --black: hsl(198, 24%, 16%);
-  --blue: hsl(216, 100%, 60%);
-}
+
+$white: hsl(210, 100%, 98%);
+$black: hsl(198, 24%, 16%);
+$blue: hsl(216, 100%, 60%);
+$separating-shadow: 0px 1px 17px -8px rgba(31, 45, 51, 0.9);
 
 /* Global Styles */
 * {
@@ -17,18 +17,25 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--white);
-  color: var(--black);
+  background-color: $white;
+  color: $black;
 }
 
 /* Main Styling */
+#loading-indicator {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 /* Navbar */
 #main-navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0px 1px 18px 1px rgba(31, 45, 51, 0.9);
+  box-shadow: $separating-shadow;
   #board-title {
     display: flex;
     margin-left: 2rem;
@@ -52,11 +59,18 @@ body {
   bottom: 0;
   width: 100%;
   text-align: center;
-  padding: 0.5rem 0;
-
+  padding: 0.8rem 0;
+  overflow-y: hidden;
+  overflow-x: auto;
+  box-shadow: $separating-shadow;
   button {
-    margin-right: 1rem;
-    border: 1px solid var(--black);
+    transition: transform 0.4s ease;
+    margin: 0 0.6rem;
+    border: 1px solid $black;
     text-transform: capitalize;
+  }
+
+  button.active {
+    transform: scale(1.2);
   }
 }
