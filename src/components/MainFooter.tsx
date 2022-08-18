@@ -1,33 +1,42 @@
 import { Button } from "@mui/material";
-import axios from "axios";
-import { useState, useEffect } from "react";
 import { useGlobalContext } from "../context/appContext";
-import { globalContextInterface, Tasksboard } from "../interfaces/interfaces";
 
 const MainFooter = () => {
-  const [tasksboards, setTasksboards] = useState<Tasksboard[] | never[]>([]);
-  const context: globalContextInterface = useGlobalContext();
-  console.log(context.activeTasksboardId);
+  const { globalState, setGlobalState } = useGlobalContext();
+  const { tasksboards, activeTasksboardId } = globalState;
 
-  useEffect(() => {
-    const fetchAllTasksboards = async () => {
-      const response = await axios.get("http://localhost:5000/api/tasksboards");
-      if (response.status === 200) {
-        // console.log(response.data);
-        setTasksboards(response.data);
-      }
-    };
-    fetchAllTasksboards();
-  }, []);
+  const changeActiveTasksboard = (tasksboardId: number) => {
+    setGlobalState({ ...globalState, activeTasksboardId: tasksboardId });
+  };
 
   return (
     <div id="main-footer">
-      {tasksboards.map((tasksboard, index) => {
-        return (
-          <Button key={tasksboard.id} variant="contained" color="secondary">
-            {tasksboard.boardTitle}
-          </Button>
-        );
+      {tasksboards.map((tasksboard) => {
+        // Scale the button which shows the active tasksboard.
+        if (activeTasksboardId === tasksboard.id) {
+          return (
+            <Button
+              key={tasksboard.id}
+              variant="contained"
+              color="secondary"
+              className="active"
+              onClick={() => changeActiveTasksboard(tasksboard.id)}
+            >
+              {tasksboard.boardTitle}
+            </Button>
+          );
+        } else {
+          return (
+            <Button
+              key={tasksboard.id}
+              variant="contained"
+              color="secondary"
+              onClick={() => changeActiveTasksboard(tasksboard.id)}
+            >
+              {tasksboard.boardTitle}
+            </Button>
+          );
+        }
       })}
     </div>
   );
