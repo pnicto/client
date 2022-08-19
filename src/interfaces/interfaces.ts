@@ -1,19 +1,23 @@
 import React from "react";
 
-interface Tasksboard {
+export interface TasksboardInterface {
   id: number;
   boardTitle: string;
 }
 
-interface globalContextInterface {
-  globalState: globalState;
-  setGlobalState: React.Dispatch<React.SetStateAction<globalState>>;
+export interface globalContextInterface {
+  globalState: globalStateInterface;
+  setGlobalState: React.Dispatch<React.SetStateAction<globalStateInterface>>;
 }
 
-interface globalState {
+export interface globalStateInterface {
   activeTasksboardId: number;
-  tasksboards: Tasksboard[];
+  tasksboards: TasksboardInterface[];
   isLoading: boolean;
 }
 
-export type { Tasksboard, globalContextInterface, globalState };
+export interface TaskcardInterface {
+  id: number;
+  cardTitle: string;
+  taskboardId: number;
+}

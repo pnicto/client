@@ -1,5 +1,8 @@
 import React, { useContext, useState } from "react";
-import { globalContextInterface, globalState } from "../interfaces/interfaces";
+import {
+  globalContextInterface,
+  globalStateInterface,
+} from "../interfaces/interfaces";
 
 const AppContext = React.createContext({});
 type Props = {
@@ -7,9 +10,9 @@ type Props = {
 };
 
 const AppProvider = ({ children }: Props) => {
-  const [globalState, setGlobalState] = useState<globalState>({
+  const [globalState, setGlobalState] = useState<globalStateInterface>({
     isLoading: true,
-  } as globalState);
+  } as globalStateInterface);
 
   return (
     <AppContext.Provider value={{ globalState, setGlobalState }}>
