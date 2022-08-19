@@ -3,7 +3,7 @@ import { Card, IconButton, List } from "@mui/material";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { TaskcardInterface, TaskitemInterface } from "../interfaces/interfaces";
-import AddDialog from "./misc/AddDialog";
+import AddDialog from "./dialogs/AddDialog";
 import Taskitem from "./Taskitem";
 
 type Props = {

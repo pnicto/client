@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useGlobalContext } from "../context/appContext";
 import { useRef, useState } from "react";
-import AddDialog from "./misc/AddDialog";
+import AddDialog from "./dialogs/AddDialog";
 import axios from "axios";
 
 const MainFooter = () => {
