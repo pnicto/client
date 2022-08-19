@@ -21,3 +21,11 @@ export interface TaskcardInterface {
   cardTitle: string;
   taskboardId: number;
 }
+
+export interface TaskitemInterface {
+  id: number;
+  description: string;
+  completed: boolean;
+  taskcardId: number;
+  title: string;
+}
