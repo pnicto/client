@@ -7,7 +7,7 @@ import MainFooter from "./components/MainFooter";
 import { useGlobalContext } from "./context/appContext";
 import axios from "axios";
 import { TasksboardInterface } from "./interfaces/interfaces";
-import LoadingIndicator from "./components/LoadingIndicator";
+import LoadingIndicator from "./components/misc/LoadingIndicator";
 import Tasksboard from "./components/Taskboard";
 
 export const theme = createTheme({
