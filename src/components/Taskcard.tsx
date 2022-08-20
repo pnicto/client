@@ -54,7 +54,7 @@ const Taskcard = ({ taskcard }: Props) => {
   };
 
   return (
-    <Card className="taskcard">
+    <Card className="taskcard" elevation={3}>
       <div className="card-header">
         <h3 className="card-title">{taskcard.cardTitle}</h3>
         <div className="card-buttons">
@@ -77,7 +77,7 @@ const Taskcard = ({ taskcard }: Props) => {
       </div>
       <List>
         {tasks.map((task) => {
-          return <Taskitem key={task.id}></Taskitem>;
+          return <Taskitem key={task.id} {...task}></Taskitem>;
         })}
       </List>
     </Card>
