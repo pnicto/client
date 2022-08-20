@@ -117,6 +117,9 @@ body {
 
 // Taskitem
 .taskcard {
+  .MuiButtonBase-root {
+    padding: 0.25rem;
+  }
   .task-item.complete {
     text-decoration: line-through;
     opacity: 0.6;
