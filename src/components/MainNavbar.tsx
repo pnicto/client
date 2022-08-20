@@ -8,7 +8,7 @@ import {
 } from "@mui/material/";
 import { MoreHoriz, MoreVert } from "@mui/icons-material";
 import { useGlobalContext } from "../context/appContext";
-import { useState } from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import AlertDialog from "./dialogs/AlertDialog";
 import axios from "axios";
@@ -17,7 +17,7 @@ const MainNavbar = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { globalState, changeTheme } = useGlobalContext();
   const { activeTasksboardId, tasksboards } = globalState;
-
+  const [isChecked, setIsChecked] = useState(false);
   const activeTasksboard = tasksboards.find(
     (tasksboard) => tasksboard.id === activeTasksboardId
   );
@@ -87,7 +87,14 @@ const MainNavbar = () => {
             }}
           >
             <MenuItem>
-              <MaterialUISwitch sx={{ m: 1 }} onChange={changeTheme} />
+              <MaterialUISwitch
+                sx={{ m: 1 }}
+                checked={isChecked}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  changeTheme(event);
+                  setIsChecked(!isChecked);
+                }}
+              />
             </MenuItem>
           </Menu>
         </div>
