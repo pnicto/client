@@ -15,6 +15,10 @@ type ACTIONS =
   | {
       type: "add new taskboard";
       payload: TaskboardInterface;
+    }
+  | {
+      type: "change theme";
+      payload: "dark" | "light";
     };
 
 export const reducer = (
@@ -33,6 +37,11 @@ export const reducer = (
       return { ...state, activeTasksboardId: action.payload };
     case "add new taskboard":
       return { ...state, tasksboards: [...state.tasksboards, action.payload] };
+    case "change theme":
+      return {
+        ...state,
+        themeMode: action.payload,
+      };
     default:
       throw new Error("Reducer error");
   }

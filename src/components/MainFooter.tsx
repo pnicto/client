@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Paper } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useGlobalContext } from "../context/appContext";
 import { useRef, useState } from "react";
@@ -22,44 +22,46 @@ const MainFooter = () => {
 
   return (
     <div id="main-footer">
-      {tasksboards.map((tasksboard) => {
-        // Scale the button which shows the active tasksboard.
-        if (activeTasksboardId === tasksboard.id) {
-          return (
-            <Button
-              key={tasksboard.id}
-              variant="contained"
-              color="secondary"
-              className="active"
-              onClick={() => changeActiveTaskboard(tasksboard.id)}
-            >
-              {tasksboard.boardTitle}
-            </Button>
-          );
-        } else {
-          return (
-            <Button
-              key={tasksboard.id}
-              variant="contained"
-              color="secondary"
-              onClick={() => changeActiveTaskboard(tasksboard.id)}
-            >
-              {tasksboard.boardTitle}
-            </Button>
-          );
-        }
-      })}
-      <Button onClick={handleClickOpen}>
-        <AddIcon />
-      </Button>
-      <AddDialog
-        dialogLabel="Create a tasksboard"
-        dialogTitle="Name"
-        fieldRef={taskboardRef}
-        handleClose={handleClose}
-        handleSubmit={() => handleAddTaskboard(taskboardRef, setOpen)}
-        open={open}
-      />
+      <Paper square={true} elevation={3}>
+        {tasksboards.map((tasksboard) => {
+          // Scale the button which shows the active tasksboard.
+          if (activeTasksboardId === tasksboard.id) {
+            return (
+              <Button
+                key={tasksboard.id}
+                variant="contained"
+                color="secondary"
+                className="active"
+                onClick={() => changeActiveTaskboard(tasksboard.id)}
+              >
+                {tasksboard.boardTitle}
+              </Button>
+            );
+          } else {
+            return (
+              <Button
+                key={tasksboard.id}
+                variant="contained"
+                color="secondary"
+                onClick={() => changeActiveTaskboard(tasksboard.id)}
+              >
+                {tasksboard.boardTitle}
+              </Button>
+            );
+          }
+        })}
+        <Button onClick={handleClickOpen}>
+          <AddIcon />
+        </Button>
+        <AddDialog
+          dialogLabel="Create a tasksboard"
+          dialogTitle="Name"
+          fieldRef={taskboardRef}
+          handleClose={handleClose}
+          handleSubmit={() => handleAddTaskboard(taskboardRef, setOpen)}
+          open={open}
+        />
+      </Paper>
     </div>
   );
 };

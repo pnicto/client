@@ -8,29 +8,47 @@ import LoadingIndicator from "./components/misc/LoadingIndicator";
 import Tasksboard from "./components/Taskboard";
 import { useGlobalContext } from "./context/appContext";
 
-export const theme = createTheme({
-  palette: {
-    primary: { main: "#3385ff" },
-    background: {
-      default: "#f5faff",
-    },
-    secondary: {
-      main: "#f5faff",
-      contrastText: "rgb(31, 45, 51)",
-    },
-    text: {
-      primary: "rgb(31, 45, 51)",
-    },
-  },
-  shape: {
-    borderRadius: 10,
-  },
-});
-
 function App() {
   const { globalState, fetchAllTasksboards } = useGlobalContext();
-
-  const { isLoading } = globalState;
+  const { isLoading, themeMode } = globalState;
+  const theme = createTheme({
+    palette: {
+      mode: themeMode,
+      ...(themeMode === "light"
+        ? {
+            primary: { main: "#3385ff" },
+            background: {
+              default: "hsl(210, 100%, 98%)",
+              paper: "hsl(210, 100%, 98%)",
+            },
+            secondary: {
+              main: "#f5faff",
+              contrastText: "rgb(31, 45, 51)",
+            },
+            text: {
+              primary: "rgb(31, 45, 51)",
+            },
+          }
+        : {
+            primary: {
+              main: "#f5faff",
+            },
+            secondary: {
+              main: "#1f2d33",
+            },
+            background: {
+              default: "#1f2d33",
+              paper: "#1f2d33",
+            },
+            text: {
+              primary: "#f5faff",
+            },
+          }),
+    },
+    shape: {
+      borderRadius: 10,
+    },
+  });
 
   useEffect(() => {
     fetchAllTasksboards();

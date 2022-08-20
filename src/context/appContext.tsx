@@ -16,6 +16,7 @@ type Props = {
 const AppProvider = ({ children }: Props) => {
   const [state, dispatch] = useReducer(reducer, {
     isLoading: true,
+    themeMode: "light",
   } as globalStateInterface);
   // Function which fetches tasksboards from server and sets active tasksboard id and tasksboards in context.
   const fetchAllTasksboards = async () => {
@@ -77,6 +78,20 @@ const AppProvider = ({ children }: Props) => {
     console.log(newBoardTitle);
   };
 
+  const changeTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      dispatch({
+        type: "change theme",
+        payload: "dark",
+      });
+    } else {
+      dispatch({
+        type: "change theme",
+        payload: "light",
+      });
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -84,6 +99,7 @@ const AppProvider = ({ children }: Props) => {
         fetchAllTasksboards,
         changeActiveTaskboard,
         handleAddTaskboard,
+        changeTheme,
       }}
     >
       {children}

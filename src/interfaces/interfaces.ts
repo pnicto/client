@@ -7,6 +7,7 @@ export interface globalStateInterface {
   activeTasksboardId: number;
   tasksboards: TaskboardInterface[];
   isLoading: boolean;
+  themeMode: "dark" | "light";
 }
 
 export interface globalContextInterface {
@@ -17,6 +18,7 @@ export interface globalContextInterface {
     ref: React.MutableRefObject<HTMLInputElement | undefined>,
     setDialogState: React.Dispatch<React.SetStateAction<boolean>>
   ) => Promise<void>;
+  changeTheme: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export interface TaskcardInterface {

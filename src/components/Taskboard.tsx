@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Paper } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useGlobalContext } from "../context/appContext";
 import { TaskcardInterface } from "../interfaces/interfaces";
@@ -33,11 +34,13 @@ const Taskboard = () => {
   }, [activeTasksboardId]);
 
   return (
-    <div id="taskboard">
-      {taskcards?.map((taskcard) => {
-        return <Taskcard key={taskcard.id} taskcard={taskcard}></Taskcard>;
-      })}
-    </div>
+    <Paper square={true}>
+      <div id="taskboard">
+        {taskcards?.map((taskcard) => {
+          return <Taskcard key={taskcard.id} taskcard={taskcard}></Taskcard>;
+        })}
+      </div>
+    </Paper>
   );
 };
 

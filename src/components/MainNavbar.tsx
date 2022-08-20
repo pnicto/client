@@ -1,17 +1,22 @@
-import { Button, IconButton, Menu, MenuItem, Switch } from "@mui/material/";
+import {
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+  Switch,
+  Paper,
+} from "@mui/material/";
 import { MoreHoriz, MoreVert } from "@mui/icons-material";
 import { useGlobalContext } from "../context/appContext";
 import { useState } from "react";
 import { styled } from "@mui/material/styles";
-import { theme } from "../App";
 import AlertDialog from "./dialogs/AlertDialog";
 import axios from "axios";
 
 const MainNavbar = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { globalState } = useGlobalContext();
+  const { globalState, changeTheme } = useGlobalContext();
   const { activeTasksboardId, tasksboards } = globalState;
-  // const [themeMode, setThemeMode] = useState<"dark" | "light">("light");
 
   const activeTasksboard = tasksboards.find(
     (tasksboard) => tasksboard.id === activeTasksboardId
@@ -23,6 +28,7 @@ const MainNavbar = () => {
   const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const closeMenu = () => {
     setAnchorEl(null);
   };
@@ -36,17 +42,6 @@ const MainNavbar = () => {
     setIsDialogOpen(false);
   };
 
-  // TODO: Theme changing
-  // const changeTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (event.target.checked) {
-  //     setThemeMode("dark");
-  //     theme.palette.mode = themeMode;
-  //   } else {
-  //     setThemeMode("light");
-  //     theme.palette.mode = themeMode;
-  //   }
-  // };
-
   //TODO: Clear all button
   const handleClearAll = async () => {
     const url = `${process.env.REACT_APP_BASE_URL}/taskcards/clearTaskcards/${activeTasksboardId}`;
@@ -57,41 +52,46 @@ const MainNavbar = () => {
   };
 
   return (
-    <nav id="main-navbar">
-      <div id="board-title">
-        <h3>{activeTasksboard?.boardTitle}</h3>
-        <IconButton aria-label="more board actions">
-          <MoreVert />
-        </IconButton>
-      </div>
-      <div id="nav-button-group">
-        <Button variant="contained" onClick={handleClickOpen}>
-          clear current
-        </Button>
-        <AlertDialog
-          dialogTitle="Are you sure?"
-          handleClose={handleClose}
-          open={isDialogOpen}
-          handleAlert={handleClearAll}
-        />
-        <Button variant="contained">export</Button>
-        <IconButton aria-label="more actions" onClick={openMenu}>
-          <MoreHoriz />
-        </IconButton>
-        <Menu
-          id="more-settings"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={closeMenu}
-          MenuListProps={{
-            "aria-labelledby": "basic-button",
-          }}
-        >
-          <MenuItem>
-            <MaterialUISwitch sx={{ m: 1 }} onChange={() => {}} />
-          </MenuItem>
-        </Menu>
-      </div>
+    <nav
+      id="main-navbar"
+      // className={themeMode === "light" ? "light-bg" : "dark-bg"}
+    >
+      <Paper square={true} elevation={3}>
+        <div id="board-title">
+          <h3>{activeTasksboard?.boardTitle}</h3>
+          <IconButton aria-label="more board actions">
+            <MoreVert />
+          </IconButton>
+        </div>
+        <div id="nav-button-group">
+          <Button variant="contained" onClick={handleClickOpen}>
+            clear current
+          </Button>
+          <AlertDialog
+            dialogTitle="Are you sure?"
+            handleClose={handleClose}
+            open={isDialogOpen}
+            handleAlert={handleClearAll}
+          />
+          <Button variant="contained">export</Button>
+          <IconButton aria-label="more actions" onClick={openMenu}>
+            <MoreHoriz />
+          </IconButton>
+          <Menu
+            id="more-settings"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={closeMenu}
+            MenuListProps={{
+              "aria-labelledby": "basic-button",
+            }}
+          >
+            <MenuItem>
+              <MaterialUISwitch sx={{ m: 1 }} onChange={changeTheme} />
+            </MenuItem>
+          </Menu>
+        </div>
+      </Paper>
     </nav>
   );
 };
