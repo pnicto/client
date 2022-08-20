@@ -1,19 +1,22 @@
-import React from "react";
-
-export interface TasksboardInterface {
+export interface TaskboardInterface {
   id: number;
   boardTitle: string;
 }
 
-export interface globalContextInterface {
-  globalState: globalStateInterface;
-  setGlobalState: React.Dispatch<React.SetStateAction<globalStateInterface>>;
-}
-
 export interface globalStateInterface {
   activeTasksboardId: number;
-  tasksboards: TasksboardInterface[];
+  tasksboards: TaskboardInterface[];
   isLoading: boolean;
+}
+
+export interface globalContextInterface {
+  globalState: globalStateInterface;
+  fetchAllTasksboards: () => Promise<void>;
+  changeActiveTaskboard: (tasksboardId: number) => void;
+  handleAddTaskboard: (
+    ref: React.MutableRefObject<HTMLInputElement | undefined>,
+    setDialogState: React.Dispatch<React.SetStateAction<boolean>>
+  ) => Promise<void>;
 }
 
 export interface TaskcardInterface {
