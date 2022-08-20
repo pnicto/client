@@ -50,8 +50,8 @@ const MainFooter = () => {
             );
           }
         })}
-        <Button onClick={handleClickOpen}>
-          <AddIcon />
+        <Button onClick={handleClickOpen} color="secondary">
+          <AddIcon color="primary" />
         </Button>
         <AddDialog
           dialogLabel="Create a tasksboard"
