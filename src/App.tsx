@@ -46,7 +46,7 @@ function App() {
           }),
     },
     shape: {
-      borderRadius: 10,
+      borderRadius: 8,
     },
   });
 

@@ -56,7 +56,7 @@ const Taskcard = ({ taskcard }: Props) => {
   return (
     <Card className="taskcard" elevation={3}>
       <div className="card-header">
-        <h3 className="card-title">{taskcard.cardTitle}</h3>
+        <h4 className="card-title">{taskcard.cardTitle}</h4>
         <div className="card-buttons">
           <IconButton onClick={handleClickOpen}>
             <AddCircle color="primary" />
