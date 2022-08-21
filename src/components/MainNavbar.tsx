@@ -11,11 +11,10 @@ import { useGlobalContext } from "../context/appContext";
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import AlertDialog from "./dialogs/AlertDialog";
-import axios from "axios";
 
 const MainNavbar = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { globalState, changeTheme } = useGlobalContext();
+  const { globalState, changeTheme, handleClearAll } = useGlobalContext();
   const { activeTasksboardId, tasksboards } = globalState;
   const [isChecked, setIsChecked] = useState(false);
   const activeTasksboard = tasksboards.find(
@@ -42,20 +41,8 @@ const MainNavbar = () => {
     setIsDialogOpen(false);
   };
 
-  //TODO: Clear all button
-  const handleClearAll = async () => {
-    const url = `${process.env.REACT_APP_BASE_URL}/taskcards/clearTaskcards/${activeTasksboardId}`;
-    const deleteResponse = await axios.delete(url);
-    console.log(deleteResponse.data);
-
-    setIsDialogOpen(false);
-  };
-
   return (
-    <nav
-      id="main-navbar"
-      // className={themeMode === "light" ? "light-bg" : "dark-bg"}
-    >
+    <nav id="main-navbar">
       <Paper square={true} elevation={3}>
         <div id="board-title">
           <h3>{activeTasksboard?.boardTitle}</h3>
@@ -71,7 +58,7 @@ const MainNavbar = () => {
             dialogTitle="Are you sure?"
             handleClose={handleClose}
             open={isDialogOpen}
-            handleAlert={handleClearAll}
+            handleAlert={() => handleClearAll(handleClose)}
           />
           <Button variant="contained">export</Button>
           <IconButton aria-label="more actions" onClick={openMenu}>
@@ -92,6 +79,7 @@ const MainNavbar = () => {
                 checked={isChecked}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                   changeTheme(event);
+                  closeMenu();
                   setIsChecked(!isChecked);
                 }}
               />
