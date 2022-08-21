@@ -8,17 +8,24 @@ export interface globalStateInterface {
   tasksboards: TaskboardInterface[];
   isLoading: boolean;
   themeMode: "dark" | "light";
+  currentTaskcards: TaskcardInterface[];
 }
 
 export interface globalContextInterface {
   globalState: globalStateInterface;
   fetchAllTasksboards: () => Promise<void>;
+  fetchAllTaskscards: () => Promise<void>;
   changeActiveTaskboard: (tasksboardId: number) => void;
   handleAddTaskboard: (
     ref: React.MutableRefObject<HTMLInputElement | undefined>,
     setDialogState: React.Dispatch<React.SetStateAction<boolean>>
   ) => Promise<void>;
+  handleAddTaskcard: (
+    ref: React.MutableRefObject<HTMLInputElement | undefined>,
+    setDialogState: React.Dispatch<React.SetStateAction<boolean>>
+  ) => Promise<void>;
   changeTheme: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleClearAll: (handleClose: () => void) => Promise<void>;
 }
 
 export interface TaskcardInterface {
