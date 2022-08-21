@@ -99,7 +99,7 @@ body {
   .taskcard {
     margin-top: 0.5rem;
     margin-left: 0.8rem;
-    min-width: 300px;
+    min-width: 275px;
     height: fit-content;
     .card-header {
       padding-top: 0.6rem;
@@ -111,6 +111,11 @@ body {
       .card-title {
         margin: 0;
       }
+    }
+    .add-card-btn {
+      display: flex;
+      justify-content: center;
+      padding: 8px;
     }
   }
 }

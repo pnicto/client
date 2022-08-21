@@ -1,31 +1,25 @@
-import axios from "axios";
-import { Paper } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Card, ListItemButton, Paper } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
 import { useGlobalContext } from "../context/appContext";
-import { TaskcardInterface } from "../interfaces/interfaces";
 import Taskcard from "./Taskcard";
+import AddDialog from "./dialogs/AddDialog";
+import { Add } from "@mui/icons-material";
 
 const Taskboard = () => {
-  const { globalState } = useGlobalContext();
-  const { activeTasksboardId } = globalState;
+  const { globalState, fetchAllTaskscards, handleAddTaskcard } =
+    useGlobalContext();
+  const { activeTasksboardId, currentTaskcards } = globalState;
+  const [open, setOpen] = useState(false);
+  const taskcardRef = useRef<HTMLInputElement>();
+  // const [taskcards, setTaskcards] = useState<TaskcardInterface[]>([]);
 
-  const [taskcards, setTaskcards] = useState<TaskcardInterface[]>();
+  // Dialog controls
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
 
-  const fetchAllTaskscards = async () => {
-    const url = `${process.env.REACT_APP_BASE_URL}/taskCards/${activeTasksboardId}`;
-    const getResponse = await axios.get(url);
-    const responseData: TaskcardInterface[] = getResponse.data;
-
-    if (getResponse.status === 200) {
-      // If there are no taskcards in the database, create a taskcard and set the state.
-      if (responseData.length === 0) {
-        const postResponse = await axios.post(url);
-        const defaultList: TaskcardInterface = postResponse.data;
-        setTaskcards([defaultList]);
-      } else {
-        setTaskcards(responseData);
-      }
-    }
+  const handleClose = () => {
+    setOpen(false);
   };
 
   useEffect(() => {
@@ -36,9 +30,22 @@ const Taskboard = () => {
   return (
     <Paper square={true}>
       <div id="taskboard">
-        {taskcards?.map((taskcard) => {
+        {currentTaskcards?.map((taskcard) => {
           return <Taskcard key={taskcard.id} taskcard={taskcard}></Taskcard>;
         })}
+        <Card className="taskcard" elevation={3}>
+          <ListItemButton className="add-card-btn" onClick={handleClickOpen}>
+            <Add color="primary" /> Add new list
+          </ListItemButton>
+        </Card>
+        <AddDialog
+          dialogLabel="Create a new list"
+          dialogTitle="List name"
+          fieldRef={taskcardRef}
+          handleClose={handleClose}
+          handleSubmit={() => handleAddTaskcard(taskcardRef, setOpen)}
+          open={open}
+        />{" "}
       </div>
     </Paper>
   );

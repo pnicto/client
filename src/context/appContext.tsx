@@ -4,6 +4,7 @@ import {
   globalContextInterface,
   globalStateInterface,
   TaskboardInterface,
+  TaskcardInterface,
 } from "../interfaces/interfaces";
 import { reducer } from "./reducer";
 
@@ -18,6 +19,7 @@ const AppProvider = ({ children }: Props) => {
     isLoading: true,
     themeMode: "light",
   } as globalStateInterface);
+
   // Function which fetches tasksboards from server and sets active tasksboard id and tasksboards in context.
   const fetchAllTasksboards = async () => {
     const url = `${process.env.REACT_APP_BASE_URL}/taskboards`;
@@ -45,6 +47,20 @@ const AppProvider = ({ children }: Props) => {
           },
         });
       }
+    }
+  };
+
+  const fetchAllTaskscards = async () => {
+    const url = `${process.env.REACT_APP_BASE_URL}/taskCards/${state.activeTasksboardId}`;
+    const getResponse = await axios.get(url);
+    const responseData: TaskcardInterface[] = getResponse.data;
+
+    if (getResponse.status === 200) {
+      //      setTaskcards(responseData);
+      dispatch({
+        type: "set taskcards",
+        payload: responseData,
+      });
     }
   };
 
@@ -77,7 +93,29 @@ const AppProvider = ({ children }: Props) => {
     }
     console.log(newBoardTitle);
   };
+  const handleAddTaskcard = async (
+    ref: React.MutableRefObject<HTMLInputElement | undefined>,
+    setDialogState: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    const taskcardToBeAdded = ref.current?.value;
+    if (taskcardToBeAdded) {
+      const postBody = {
+        cardTitle: taskcardToBeAdded,
+      };
+      const url = `${process.env.REACT_APP_BASE_URL}/taskCards/${state.activeTasksboardId}`;
+      const postResponse = await axios.post(url, postBody);
+      const newTaskcard = postResponse.data;
+      // setTaskcards([...taskcards, newTaskcard]);
+      dispatch({
+        type: "add new taskcard",
+        payload: newTaskcard,
+      });
 
+      setDialogState(false);
+    } else {
+      setDialogState(true);
+    }
+  };
   const changeTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       dispatch({
@@ -92,14 +130,27 @@ const AppProvider = ({ children }: Props) => {
     }
   };
 
+  //TODO: Clear all button
+  const handleClearAll = async (handleClose: () => void) => {
+    const url = `${process.env.REACT_APP_BASE_URL}/taskcards/clearTaskcards/${state.activeTasksboardId}`;
+    const deleteResponse = await axios.delete(url);
+    console.log(deleteResponse.data);
+    dispatch({
+      type: "clear all taskcards",
+    });
+    handleClose();
+  };
+
   return (
     <AppContext.Provider
       value={{
         globalState: state,
         fetchAllTasksboards,
         changeActiveTaskboard,
-        handleAddTaskboard,
+        handleAddTaskboard,handleAddTaskcard,
         changeTheme,
+        handleClearAll,
+        fetchAllTaskscards,
       }}
     >
       {children}
