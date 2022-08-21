@@ -14,9 +14,7 @@ import { TaskitemInterface } from "../interfaces/interfaces";
 const Taskitem = ({ id, completed, description, title }: TaskitemInterface) => {
   const [isComplete, setIsComplete] = useState(completed);
 
-  const changeCompletionStatus = async (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const changeCompletionStatus = async () => {
     const url = `${process.env.REACT_APP_BASE_URL}/tasks/${id}`;
     await axios.patch(url, {
       completed: !isComplete,
@@ -29,8 +27,15 @@ const Taskitem = ({ id, completed, description, title }: TaskitemInterface) => {
       disablePadding={true}
       className={`task-item ${isComplete && "complete"}`}
     >
-      <ListItemButton disableRipple={true} disableGutters={true}>
-        <Checkbox onClick={changeCompletionStatus} checked={isComplete} />
+      <ListItemButton
+        disableGutters={true}
+        onClick={() => changeCompletionStatus()}
+      >
+        <Checkbox
+          onClick={changeCompletionStatus}
+          checked={isComplete}
+          disableRipple={true}
+        />
         <ListItemText>{title}</ListItemText>
         <ListItemSecondaryAction>
           <IconButton onClick={() => console.log("Pressed edit")}>

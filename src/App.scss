@@ -120,6 +120,10 @@ body {
   .MuiButtonBase-root {
     padding: 0.25rem;
   }
+  .task-item {
+    transition: text-decoration 0.1s ease, opacity 0.15s ease;
+  }
+
   .task-item.complete {
     text-decoration: line-through;
     opacity: 0.6;
