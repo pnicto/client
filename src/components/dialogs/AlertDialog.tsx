@@ -1,11 +1,4 @@
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogActions, Button } from "@mui/material";
 
 interface Props {
   dialogTitle: string;
@@ -27,18 +20,15 @@ const AlertDialog = ({
       aria-describedby="alert-dialog-description"
     >
       <DialogTitle id="alert-dialog-title">{dialogTitle}</DialogTitle>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          Let Google help apps determine location. This means sending anonymous
-          location data to Google, even when no apps are running.
-        </DialogContentText>
-      </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} variant="text">
           Cancel
         </Button>
         <Button
-          onClick={handleAlert}
+          onClick={() => {
+            handleClose();
+            handleAlert();
+          }}
           variant="outlined"
           color="error"
           autoFocus

@@ -26,6 +26,10 @@ type ACTIONS =
       payload: TaskcardInterface;
     }
   | {
+      type: "delete taskcard";
+      payload: number;
+    }
+  | {
       type: "change theme";
       payload: "dark" | "light";
     }
@@ -63,6 +67,14 @@ export const reducer = (
       return {
         ...state,
         currentTaskcards: [],
+      };
+    case "delete taskcard":
+      const remainingTaskcards = state.currentTaskcards.filter(
+        (taskcard) => taskcard.id !== action.payload
+      );
+      return {
+        ...state,
+        currentTaskcards: [...remainingTaskcards],
       };
     case "change theme":
       return {

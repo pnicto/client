@@ -25,7 +25,8 @@ export interface globalContextInterface {
     setDialogState: React.Dispatch<React.SetStateAction<boolean>>
   ) => Promise<void>;
   changeTheme: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleClearAll: (handleClose: () => void) => Promise<void>;
+  handleClearAll: () => Promise<void>;
+  deleteTaskcard: (taskcardId: number) => Promise<void>;
 }
 
 export interface TaskcardInterface {

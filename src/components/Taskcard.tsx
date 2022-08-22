@@ -2,17 +2,31 @@ import { AddCircle, MoreVert } from "@mui/icons-material";
 import { Card, IconButton, List } from "@mui/material";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
+import { useGlobalContext } from "../context/appContext";
 import { TaskcardInterface, TaskitemInterface } from "../interfaces/interfaces";
 import AddDialog from "./dialogs/AddDialog";
+import TaskcardMenu from "./menus/TaskcardMenu";
 import Taskitem from "./Taskitem";
 
 type Props = {
   taskcard: TaskcardInterface;
 };
+
 const Taskcard = ({ taskcard }: Props) => {
   const [open, setOpen] = useState(false);
   const taskRef = useRef<HTMLInputElement>();
   const [tasks, setTasks] = useState<TaskitemInterface[]>([]);
+  const { deleteTaskcard } = useGlobalContext();
+  // Functions that handle the menu from MUI docs.
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const isMenuOpen = Boolean(anchorEl);
+  const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closeMenu = () => {
+    setAnchorEl(null);
+  };
 
   const fetchAllTasks = async () => {
     const url = `${process.env.REACT_APP_BASE_URL}/tasks/${taskcard.id}`;
@@ -69,10 +83,15 @@ const Taskcard = ({ taskcard }: Props) => {
             handleSubmit={handleAddTask}
             open={open}
           />
-          <IconButton>
+          <IconButton aria-label="more card actions" onClick={openMenu}>
             <MoreVert />
           </IconButton>
-          {/* TODO:Menu for more options. */}
+          <TaskcardMenu
+            anchorEl={anchorEl}
+            closeMenu={closeMenu}
+            open={isMenuOpen}
+            deleteTaskcard={() => deleteTaskcard(taskcard.id)}
+          />
         </div>
       </div>
       <List>

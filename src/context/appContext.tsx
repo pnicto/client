@@ -91,7 +91,6 @@ const AppProvider = ({ children }: Props) => {
     } else {
       setDialogState(true);
     }
-    console.log(newBoardTitle);
   };
   const handleAddTaskcard = async (
     ref: React.MutableRefObject<HTMLInputElement | undefined>,
@@ -130,15 +129,22 @@ const AppProvider = ({ children }: Props) => {
     }
   };
 
-  //TODO: Clear all button
-  const handleClearAll = async (handleClose: () => void) => {
+  const handleClearAll = async () => {
     const url = `${process.env.REACT_APP_BASE_URL}/taskcards/clearTaskcards/${state.activeTasksboardId}`;
-    const deleteResponse = await axios.delete(url);
-    console.log(deleteResponse.data);
+    await axios.delete(url);
     dispatch({
       type: "clear all taskcards",
     });
-    handleClose();
+  };
+
+  const deleteTaskcard = async (taskcardId: number) => {
+    const url = `${process.env.REACT_APP_BASE_URL}/taskcards/${taskcardId}`;
+    const deleteResponse = await axios.delete(url);
+    dispatch({
+      type: "delete taskcard",
+      payload: taskcardId,
+    });
+    console.log(deleteResponse.data);
   };
 
   return (
@@ -147,10 +153,12 @@ const AppProvider = ({ children }: Props) => {
         globalState: state,
         fetchAllTasksboards,
         changeActiveTaskboard,
-        handleAddTaskboard,handleAddTaskcard,
+        handleAddTaskboard,
+        handleAddTaskcard,
         changeTheme,
         handleClearAll,
         fetchAllTaskscards,
+        deleteTaskcard,
       }}
     >
       {children}

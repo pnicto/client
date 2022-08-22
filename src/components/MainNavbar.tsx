@@ -58,7 +58,7 @@ const MainNavbar = () => {
             dialogTitle="Are you sure?"
             handleClose={handleClose}
             open={isDialogOpen}
-            handleAlert={() => handleClearAll(handleClose)}
+            handleAlert={handleClearAll}
           />
           <Button variant="contained">export</Button>
           <IconButton aria-label="more actions" onClick={openMenu}>
