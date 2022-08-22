@@ -6,6 +6,7 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
+import React from "react";
 
 interface Props {
   dialogTitle: string;
@@ -27,24 +28,31 @@ const AddDialog = ({
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>{dialogTitle}</DialogTitle>
-      <DialogContent>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="name"
-          label={dialogLabel}
-          type="text"
-          fullWidth
-          variant="standard"
-          inputRef={fieldRef}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleSubmit}>
-          Add
-        </Button>
-      </DialogActions>
+      <form
+        onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
+          event.preventDefault();
+          handleSubmit();
+        }}
+      >
+        <DialogContent>
+          <TextField
+            autoFocus={true}
+            margin="dense"
+            id="name"
+            label={dialogLabel}
+            type="text"
+            fullWidth
+            variant="standard"
+            inputRef={fieldRef}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button variant="contained" type="submit">
+            Add
+          </Button>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };

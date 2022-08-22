@@ -11,15 +11,38 @@ import { useGlobalContext } from "../context/appContext";
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import AlertDialog from "./dialogs/AlertDialog";
+import axios from "axios";
 
 const MainNavbar = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { globalState, changeTheme, handleClearAll } = useGlobalContext();
-  const { activeTasksboardId, tasksboards } = globalState;
+  const { globalState, globalDispatch } = useGlobalContext();
+  const { activeTaskboardId, tasksboards } = globalState;
   const [isChecked, setIsChecked] = useState(false);
   const activeTasksboard = tasksboards.find(
-    (tasksboard) => tasksboard.id === activeTasksboardId
+    (tasksboard) => tasksboard.id === activeTaskboardId
   );
+
+  const changeTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      globalDispatch({
+        type: "change theme",
+        payload: "dark",
+      });
+    } else {
+      globalDispatch({
+        type: "change theme",
+        payload: "light",
+      });
+    }
+  };
+
+  const handleClearAll = async () => {
+    const url = `${process.env.REACT_APP_BASE_URL}/taskcards/clearTaskcards/${activeTaskboardId}`;
+    await axios.delete(url);
+    globalDispatch({
+      type: "clear all taskcards",
+    });
+  };
 
   // Functions that handle the menu from MUI docs.
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

@@ -1,10 +1,12 @@
+import { ACTIONS } from "../context/reducer";
+
 export interface TaskboardInterface {
   id: number;
   boardTitle: string;
 }
 
 export interface globalStateInterface {
-  activeTasksboardId: number;
+  activeTaskboardId: number;
   tasksboards: TaskboardInterface[];
   isLoading: boolean;
   themeMode: "dark" | "light";
@@ -13,20 +15,12 @@ export interface globalStateInterface {
 
 export interface globalContextInterface {
   globalState: globalStateInterface;
-  fetchAllTasksboards: () => Promise<void>;
-  fetchAllTaskscards: () => Promise<void>;
-  changeActiveTaskboard: (tasksboardId: number) => void;
-  handleAddTaskboard: (
-    ref: React.MutableRefObject<HTMLInputElement | undefined>,
-    setDialogState: React.Dispatch<React.SetStateAction<boolean>>
+  globalDispatch: React.Dispatch<ACTIONS>;
+  handleAddComponent: (
+    componentName: string,
+    setDialogState: React.Dispatch<React.SetStateAction<boolean>>,
+    componentBeingAdded: "taskcard" | "taskboard"
   ) => Promise<void>;
-  handleAddTaskcard: (
-    ref: React.MutableRefObject<HTMLInputElement | undefined>,
-    setDialogState: React.Dispatch<React.SetStateAction<boolean>>
-  ) => Promise<void>;
-  changeTheme: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleClearAll: () => Promise<void>;
-  deleteTaskcard: (taskcardId: number) => Promise<void>;
 }
 
 export interface TaskcardInterface {

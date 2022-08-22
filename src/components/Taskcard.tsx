@@ -16,7 +16,7 @@ const Taskcard = ({ taskcard }: Props) => {
   const [open, setOpen] = useState(false);
   const taskRef = useRef<HTMLInputElement>();
   const [tasks, setTasks] = useState<TaskitemInterface[]>([]);
-  const { deleteTaskcard } = useGlobalContext();
+  const { globalDispatch } = useGlobalContext();
   // Functions that handle the menu from MUI docs.
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -26,6 +26,16 @@ const Taskcard = ({ taskcard }: Props) => {
 
   const closeMenu = () => {
     setAnchorEl(null);
+  };
+
+  const deleteTaskcard = async (taskcardId: number) => {
+    const url = `${process.env.REACT_APP_BASE_URL}/taskcards/${taskcardId}`;
+    const deleteResponse = await axios.delete(url);
+    globalDispatch({
+      type: "delete taskcard",
+      payload: taskcardId,
+    });
+    console.log(deleteResponse.data);
   };
 
   const fetchAllTasks = async () => {

@@ -4,7 +4,7 @@ import {
   TaskcardInterface,
 } from "../interfaces/interfaces";
 
-type ACTIONS =
+export type ACTIONS =
   | {
       type: "set taskboards";
       payload: { taskboards: TaskboardInterface[]; activeTaskboardId: number };
@@ -46,7 +46,7 @@ export const reducer = (
       return {
         ...state,
         tasksboards: action.payload.taskboards,
-        activeTasksboardId: action.payload.activeTaskboardId,
+        activeTaskboardId: action.payload.activeTaskboardId,
         isLoading: false,
       };
     case "set taskcards":
@@ -55,7 +55,7 @@ export const reducer = (
         currentTaskcards: action.payload,
       };
     case "change active taskboard":
-      return { ...state, activeTasksboardId: action.payload };
+      return { ...state, activeTaskboardId: action.payload };
     case "add new taskboard":
       return { ...state, tasksboards: [...state.tasksboards, action.payload] };
     case "add new taskcard":

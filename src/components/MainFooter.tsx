@@ -7,9 +7,16 @@ import AddDialog from "./dialogs/AddDialog";
 const MainFooter = () => {
   const [open, setOpen] = useState(false);
   const taskboardRef = useRef<HTMLInputElement>();
-  const { globalState, changeActiveTaskboard, handleAddTaskboard } =
+  const { globalState, globalDispatch, handleAddComponent } =
     useGlobalContext();
-  const { tasksboards, activeTasksboardId } = globalState;
+  const { tasksboards, activeTaskboardId } = globalState;
+
+  const changeActiveTaskboard = (tasksboardId: number) => {
+    globalDispatch({
+      type: "change active taskboard",
+      payload: tasksboardId,
+    });
+  };
 
   // Dialog controls
   const handleClickOpen = () => {
@@ -25,7 +32,7 @@ const MainFooter = () => {
       <Paper square={true} elevation={3}>
         {tasksboards.map((tasksboard) => {
           // Scale the button which shows the active tasksboard.
-          if (activeTasksboardId === tasksboard.id) {
+          if (activeTaskboardId === tasksboard.id) {
             return (
               <Button
                 key={tasksboard.id}
@@ -63,7 +70,13 @@ const MainFooter = () => {
           dialogTitle="Name"
           fieldRef={taskboardRef}
           handleClose={handleClose}
-          handleSubmit={() => handleAddTaskboard(taskboardRef, setOpen)}
+          handleSubmit={() => {
+            const taskboardTitle = taskboardRef.current?.value;
+            if (taskboardTitle) {
+              return handleAddComponent(taskboardTitle, setOpen, "taskboard");
+            }
+            throw new Error("taskcard addition");
+          }}
           open={open}
         />
       </Paper>

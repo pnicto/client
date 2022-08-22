@@ -4,14 +4,28 @@ import { useGlobalContext } from "../context/appContext";
 import Taskcard from "./Taskcard";
 import AddDialog from "./dialogs/AddDialog";
 import { Add } from "@mui/icons-material";
+import axios from "axios";
+import { TaskcardInterface } from "../interfaces/interfaces";
 
 const Taskboard = () => {
-  const { globalState, fetchAllTaskscards, handleAddTaskcard } =
+  const { globalState, globalDispatch, handleAddComponent } =
     useGlobalContext();
-  const { activeTasksboardId, currentTaskcards } = globalState;
+  const { activeTaskboardId, currentTaskcards } = globalState;
   const [open, setOpen] = useState(false);
   const taskcardRef = useRef<HTMLInputElement>();
-  // const [taskcards, setTaskcards] = useState<TaskcardInterface[]>([]);
+
+  const fetchAllTaskscards = async () => {
+    const url = `${process.env.REACT_APP_BASE_URL}/taskCards/${activeTaskboardId}`;
+    const getResponse = await axios.get(url);
+    const responseData: TaskcardInterface[] = getResponse.data;
+
+    if (getResponse.status === 200) {
+      globalDispatch({
+        type: "set taskcards",
+        payload: responseData,
+      });
+    }
+  };
 
   // Dialog controls
   const handleClickOpen = () => {
@@ -25,7 +39,7 @@ const Taskboard = () => {
   useEffect(() => {
     fetchAllTaskscards();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTasksboardId]);
+  }, [activeTaskboardId]);
 
   return (
     <Paper square={true}>
@@ -43,7 +57,13 @@ const Taskboard = () => {
           dialogTitle="List name"
           fieldRef={taskcardRef}
           handleClose={handleClose}
-          handleSubmit={() => handleAddTaskcard(taskcardRef, setOpen)}
+          handleSubmit={() => {
+            const taskcardTitle = taskcardRef.current?.value;
+            if (taskcardTitle) {
+              return handleAddComponent(taskcardTitle, setOpen, "taskcard");
+            }
+            throw new Error("taskcard addition");
+          }}
           open={open}
         />{" "}
       </div>
