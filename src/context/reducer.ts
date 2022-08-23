@@ -26,6 +26,10 @@ export type ACTIONS =
       payload: TaskcardInterface;
     }
   | {
+      type: "delete taskboard";
+      payload: TaskboardInterface;
+    }
+  | {
       type: "delete taskcard";
       payload: number;
     }
@@ -76,6 +80,19 @@ export const reducer = (
         ...state,
         currentTaskcards: [...remainingTaskcards],
       };
+
+    case "delete taskboard":
+      const remainingTaskboards = state.tasksboards.filter(
+        (taskboard) => taskboard.id !== action.payload.id
+      );
+
+      return {
+        ...state,
+        tasksboards: [...remainingTaskboards],
+        activeTaskboardId:
+          remainingTaskboards[remainingTaskboards.length - 1].id,
+      };
+
     case "change theme":
       return {
         ...state,

@@ -4,12 +4,19 @@ import AlertDialog from "../dialogs/AlertDialog";
 
 type Props = {
   anchorEl: HTMLElement | null;
+  component: "list" | "board";
   open: boolean;
   closeMenu: () => void;
-  deleteTaskcard: () => Promise<void>;
+  deleteAction: () => Promise<void>;
 };
 
-const TaskcardMenu = ({ anchorEl, open, closeMenu, deleteTaskcard }: Props) => {
+const OptionsMenu = ({
+  anchorEl,
+  component,
+  open,
+  closeMenu,
+  deleteAction,
+}: Props) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   // Dialog Controls
   const handleClickOpen = () => {
@@ -19,6 +26,7 @@ const TaskcardMenu = ({ anchorEl, open, closeMenu, deleteTaskcard }: Props) => {
   const handleClose = () => {
     setIsDialogOpen(false);
   };
+
   return (
     <Menu
       id="more-settings"
@@ -29,22 +37,22 @@ const TaskcardMenu = ({ anchorEl, open, closeMenu, deleteTaskcard }: Props) => {
         "aria-labelledby": "basic-button",
       }}
     >
-      <MenuItem onClick={closeMenu}>Rename list</MenuItem>
+      <MenuItem onClick={closeMenu}>Rename {component}</MenuItem>
       <MenuItem
         onClick={() => {
           handleClickOpen();
         }}
       >
-        Delete list
+        Delete {component}
       </MenuItem>
       <AlertDialog
         dialogTitle="Are you sure?"
         open={isDialogOpen}
         handleClose={handleClose}
-        handleAlert={deleteTaskcard}
+        handleAlert={deleteAction}
       />
     </Menu>
   );
 };
 
-export default TaskcardMenu;
+export default OptionsMenu;

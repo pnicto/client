@@ -12,6 +12,7 @@ import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import AlertDialog from "./dialogs/AlertDialog";
 import axios from "axios";
+import OptionsMenu from "./menus/OptionsMenu";
 
 const MainNavbar = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -46,6 +47,17 @@ const MainNavbar = () => {
 
   // Functions that handle the menu from MUI docs.
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [boardAnchorEl, setBoardAnchorEl] = useState<null | HTMLElement>(null);
+  const isBoardMenuOpen = Boolean(boardAnchorEl);
+
+  const openBoardMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setBoardAnchorEl(event.currentTarget);
+  };
+
+  const closeBoardMenu = () => {
+    setBoardAnchorEl(null);
+  };
+
   const open = Boolean(anchorEl);
   const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -64,14 +76,33 @@ const MainNavbar = () => {
     setIsDialogOpen(false);
   };
 
+  const deleteTaskboard = async () => {
+    const url = `${process.env.REACT_APP_BASE_URL}/taskboards/${activeTaskboardId}`;
+    const deleteResponse = await axios.delete(url);
+    const deletedTaskboard = deleteResponse.data;
+    globalDispatch({
+      type: "delete taskboard",
+      payload: deletedTaskboard,
+    });
+    closeBoardMenu();
+    console.log(deleteResponse.data);
+  };
+
   return (
     <nav id="main-navbar">
       <Paper square={true} elevation={3}>
         <div id="board-title">
           <h3>{activeTasksboard?.boardTitle}</h3>
-          <IconButton aria-label="more board actions">
+          <IconButton aria-label="more board actions" onClick={openBoardMenu}>
             <MoreVert />
           </IconButton>
+          <OptionsMenu
+            anchorEl={boardAnchorEl}
+            open={isBoardMenuOpen}
+            component="board"
+            closeMenu={closeBoardMenu}
+            deleteAction={deleteTaskboard}
+          />
         </div>
         <div id="nav-button-group">
           <Button variant="contained" onClick={handleClickOpen}>

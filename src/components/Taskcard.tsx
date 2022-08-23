@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useGlobalContext } from "../context/appContext";
 import { TaskcardInterface, TaskitemInterface } from "../interfaces/interfaces";
 import AddDialog from "./dialogs/AddDialog";
-import TaskcardMenu from "./menus/TaskcardMenu";
+import OptionsMenu from "./menus/OptionsMenu";
 import Taskitem from "./Taskitem";
 
 type Props = {
@@ -17,6 +17,7 @@ const Taskcard = ({ taskcard }: Props) => {
   const taskRef = useRef<HTMLInputElement>();
   const [tasks, setTasks] = useState<TaskitemInterface[]>([]);
   const { globalDispatch } = useGlobalContext();
+  const taskcardRef = useRef<HTMLInputElement>();
   // Functions that handle the menu from MUI docs.
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -30,13 +31,20 @@ const Taskcard = ({ taskcard }: Props) => {
 
   const deleteTaskcard = async (taskcardId: number) => {
     const url = `${process.env.REACT_APP_BASE_URL}/taskcards/${taskcardId}`;
-    const deleteResponse = await axios.delete(url);
+    await axios.delete(url);
     globalDispatch({
       type: "delete taskcard",
       payload: taskcardId,
     });
-    console.log(deleteResponse.data);
   };
+
+  const renameTaskcard = async (taskcardId: number) => {
+    const url = `${process.env.REACT_APP_BASE_URL}/taskcards/${taskcardId}`;
+    const patchResponse = await axios.patch(url, {
+      cardTitle:""
+    })
+
+  }
 
   const fetchAllTasks = async () => {
     const url = `${process.env.REACT_APP_BASE_URL}/tasks/${taskcard.id}`;
@@ -96,11 +104,12 @@ const Taskcard = ({ taskcard }: Props) => {
           <IconButton aria-label="more card actions" onClick={openMenu}>
             <MoreVert />
           </IconButton>
-          <TaskcardMenu
+          <OptionsMenu
             anchorEl={anchorEl}
             closeMenu={closeMenu}
             open={isMenuOpen}
-            deleteTaskcard={() => deleteTaskcard(taskcard.id)}
+            component="list"
+            deleteAction={() => deleteTaskcard(taskcard.id)}
           />
         </div>
       </div>
