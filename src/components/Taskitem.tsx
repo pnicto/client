@@ -26,6 +26,11 @@ const Taskitem = ({ id, completed, description, title }: TaskitemInterface) => {
     <ListItem
       disablePadding={true}
       className={`task-item ${isComplete && "complete"}`}
+      secondaryAction={
+        <IconButton onClick={() => console.log("Pressed edit")}>
+          <Edit />
+        </IconButton>
+      }
     >
       <ListItemButton
         disableGutters={true}
@@ -36,12 +41,9 @@ const Taskitem = ({ id, completed, description, title }: TaskitemInterface) => {
           checked={isComplete}
           disableRipple={true}
         />
-        <ListItemText>{title}</ListItemText>
-        <ListItemSecondaryAction>
-          <IconButton onClick={() => console.log("Pressed edit")}>
-            <Edit />
-          </IconButton>
-        </ListItemSecondaryAction>
+        <ListItemText secondary={<>{description}</>} className="task-title">
+          {title}
+        </ListItemText>
       </ListItemButton>
     </ListItem>
   );

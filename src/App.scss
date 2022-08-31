@@ -127,6 +127,10 @@ body {
   }
   .task-item {
     transition: text-decoration 0.1s ease, opacity 0.15s ease;
+
+    .task-title {
+      margin-left: 0.6rem;
+    }
   }
 
   .task-item.complete {
