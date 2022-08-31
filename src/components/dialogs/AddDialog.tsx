@@ -14,7 +14,7 @@ interface Props {
   open: boolean;
   handleClose: () => void;
   fieldRef: React.MutableRefObject<HTMLInputElement | undefined>;
-  handleSubmit: () => Promise<void>;
+  handleSubmit: (() => Promise<void>) | (() => void);
 }
 
 const AddDialog = ({

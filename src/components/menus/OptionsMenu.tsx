@@ -1,6 +1,7 @@
 import { Menu, MenuItem } from "@mui/material";
 import { useState } from "react";
 import AlertDialog from "../dialogs/AlertDialog";
+import AddDialog from "../dialogs/AddDialog";
 
 type Props = {
   anchorEl: HTMLElement | null;
@@ -8,6 +9,8 @@ type Props = {
   open: boolean;
   closeMenu: () => void;
   deleteAction: () => Promise<void>;
+  renameAction: () => Promise<void> | undefined;
+  fieldRef: React.MutableRefObject<HTMLInputElement | undefined>;
 };
 
 const OptionsMenu = ({
@@ -16,8 +19,11 @@ const OptionsMenu = ({
   open,
   closeMenu,
   deleteAction,
+  fieldRef,
+  renameAction,
 }: Props) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   // Dialog Controls
   const handleClickOpen = () => {
     setIsDialogOpen(true);
@@ -25,6 +31,14 @@ const OptionsMenu = ({
 
   const handleClose = () => {
     setIsDialogOpen(false);
+  };
+
+  const handleRenameDialogOpen = () => {
+    setIsRenameDialogOpen(true);
+  };
+
+  const handleRenameDialogClose = () => {
+    setIsRenameDialogOpen(false);
   };
 
   return (
@@ -37,7 +51,20 @@ const OptionsMenu = ({
         "aria-labelledby": "basic-button",
       }}
     >
-      <MenuItem onClick={closeMenu}>Rename {component}</MenuItem>
+      <MenuItem onClick={handleRenameDialogOpen}>Rename {component}</MenuItem>
+      <AddDialog
+        dialogTitle={`Rename ${component}`}
+        handleClose={() => {
+          handleRenameDialogClose();
+        }}
+        dialogLabel={`${component} name`}
+        open={isRenameDialogOpen}
+        fieldRef={fieldRef}
+        handleSubmit={() => {
+          setIsRenameDialogOpen(false);
+          renameAction();
+        }}
+      />
       <MenuItem
         onClick={() => {
           handleClickOpen();

@@ -8,13 +8,14 @@ import {
 } from "@mui/material/";
 import { MoreHoriz, MoreVert } from "@mui/icons-material";
 import { useGlobalContext } from "../context/appContext";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { styled } from "@mui/material/styles";
 import AlertDialog from "./dialogs/AlertDialog";
 import axios from "axios";
 import OptionsMenu from "./menus/OptionsMenu";
 
 const MainNavbar = () => {
+  const taskboardRef = useRef<HTMLInputElement>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { globalState, globalDispatch } = useGlobalContext();
   const { activeTaskboardId, tasksboards } = globalState;
@@ -76,6 +77,21 @@ const MainNavbar = () => {
     setIsDialogOpen(false);
   };
 
+  const handleRenameTaskboard = async (newBoardTitle: string) => {
+    if (newBoardTitle) {
+      const url = `${process.env.REACT_APP_BASE_URL}/taskboards/${activeTaskboardId}`;
+      await axios.patch(url, {
+        cardTitle: newBoardTitle,
+      });
+      globalDispatch({
+        type: "update taskboard",
+        payload: newBoardTitle,
+      });
+    } else {
+      console.log(newBoardTitle);
+    }
+  };
+
   const deleteTaskboard = async () => {
     const url = `${process.env.REACT_APP_BASE_URL}/taskboards/${activeTaskboardId}`;
     const deleteResponse = await axios.delete(url);
@@ -102,6 +118,13 @@ const MainNavbar = () => {
             component="board"
             closeMenu={closeBoardMenu}
             deleteAction={deleteTaskboard}
+            fieldRef={taskboardRef}
+            renameAction={() => {
+              const newBoardTitle = taskboardRef.current?.value;
+              if (newBoardTitle) {
+                return handleRenameTaskboard(newBoardTitle);
+              }
+            }}
           />
         </div>
         <div id="nav-button-group">

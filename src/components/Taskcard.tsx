@@ -15,9 +15,9 @@ type Props = {
 const Taskcard = ({ taskcard }: Props) => {
   const [open, setOpen] = useState(false);
   const taskRef = useRef<HTMLInputElement>();
+  const taskcardRef = useRef<HTMLInputElement>();
   const [tasks, setTasks] = useState<TaskitemInterface[]>([]);
   const { globalDispatch } = useGlobalContext();
-  const taskcardRef = useRef<HTMLInputElement>();
   // Functions that handle the menu from MUI docs.
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -37,14 +37,6 @@ const Taskcard = ({ taskcard }: Props) => {
       payload: taskcardId,
     });
   };
-
-  const renameTaskcard = async (taskcardId: number) => {
-    const url = `${process.env.REACT_APP_BASE_URL}/taskcards/${taskcardId}`;
-    const patchResponse = await axios.patch(url, {
-      cardTitle:""
-    })
-
-  }
 
   const fetchAllTasks = async () => {
     const url = `${process.env.REACT_APP_BASE_URL}/tasks/${taskcard.id}`;
@@ -85,6 +77,21 @@ const Taskcard = ({ taskcard }: Props) => {
     }
   };
 
+  const handleRenameList = async (newListTitle: string) => {
+    if (newListTitle) {
+      const url = `${process.env.REACT_APP_BASE_URL}/taskcards/${taskcard.id}`;
+      await axios.patch(url, {
+        cardTitle: newListTitle,
+      });
+      globalDispatch({
+        type: "update taskcard",
+        payload: { newListTitle, taskcardId: taskcard.id },
+      });
+    } else {
+      console.log(newListTitle);
+    }
+  };
+
   return (
     <Card className="taskcard" elevation={3}>
       <div className="card-header">
@@ -109,7 +116,14 @@ const Taskcard = ({ taskcard }: Props) => {
             closeMenu={closeMenu}
             open={isMenuOpen}
             component="list"
+            fieldRef={taskcardRef}
             deleteAction={() => deleteTaskcard(taskcard.id)}
+            renameAction={() => {
+              const newListTitle = taskcardRef.current?.value;
+              if (newListTitle) {
+                return handleRenameList(newListTitle);
+              }
+            }}
           />
         </div>
       </div>

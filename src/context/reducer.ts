@@ -26,6 +26,14 @@ export type ACTIONS =
       payload: TaskcardInterface;
     }
   | {
+      type: "update taskboard";
+      payload: string;
+    }
+  | {
+      type: "update taskcard";
+      payload: { newListTitle: string; taskcardId: number };
+    }
+  | {
       type: "delete taskboard";
       payload: TaskboardInterface;
     }
@@ -71,6 +79,27 @@ export const reducer = (
       return {
         ...state,
         currentTaskcards: [],
+      };
+    case "update taskboard":
+      const afterUpdatingBoards = state.tasksboards.map((taskboard) => {
+        if (taskboard.id === state.activeTaskboardId) {
+          taskboard.boardTitle = action.payload;
+        }
+        return taskboard;
+      });
+      return {
+        ...state, tasksboards:[...afterUpdatingBoards]
+      };
+    case "update taskcard":
+      const afterUpdatingCards = state.currentTaskcards.map((list) => {
+        if (list.id === action.payload.taskcardId) {
+          list.cardTitle = action.payload.newListTitle;
+        }
+        return list;
+      });
+      return {
+        ...state,
+        currentTaskcards: [...afterUpdatingCards],
       };
     case "delete taskcard":
       const remainingTaskcards = state.currentTaskcards.filter(
