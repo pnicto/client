@@ -7,6 +7,7 @@ import { TaskcardInterface, TaskitemInterface } from "../interfaces/interfaces";
 import AddDialog from "./dialogs/AddDialog";
 import OptionsMenu from "./menus/OptionsMenu";
 import Taskitem from "./Taskitem";
+import { TaskcardProvider } from "../context/taskcardContext";
 
 type Props = {
   taskcard: TaskcardInterface;
@@ -127,11 +128,13 @@ const Taskcard = ({ taskcard }: Props) => {
           />
         </div>
       </div>
-      <List>
-        {tasks.map((task) => {
-          return <Taskitem key={task.id} {...task}></Taskitem>;
-        })}
-      </List>
+      <TaskcardProvider tasks={tasks} setTasks={setTasks}>
+        <List>
+          {tasks.map((task) => {
+            return <Taskitem key={task.id} task={task} />;
+          })}
+        </List>
+      </TaskcardProvider>
     </Card>
   );
 };

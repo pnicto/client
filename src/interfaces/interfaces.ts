@@ -23,6 +23,11 @@ export interface globalContextInterface {
   ) => Promise<void>;
 }
 
+export interface taskcardContextInterface {
+  tasks: TaskitemInterface[];
+  setTasks: React.Dispatch<React.SetStateAction<TaskitemInterface[]>>;
+}
+
 export interface TaskcardInterface {
   id: number;
   cardTitle: string;
