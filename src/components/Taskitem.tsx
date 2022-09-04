@@ -4,18 +4,30 @@ import {
   IconButton,
   ListItem,
   ListItemButton,
-  ListItemSecondaryAction,
   ListItemText,
 } from "@mui/material";
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 import { TaskitemInterface } from "../interfaces/interfaces";
+import TaskEditMenu from "../components/dialogs/TaskEditDialog";
 
-const Taskitem = ({ id, completed, description, title }: TaskitemInterface) => {
-  const [isComplete, setIsComplete] = useState(completed);
+interface Props {
+  task: TaskitemInterface;
+}
+const Taskitem = ({ task }: Props) => {
+  const [isComplete, setIsComplete] = useState(task.completed);
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const changeCompletionStatus = async () => {
-    const url = `${process.env.REACT_APP_BASE_URL}/tasks/${id}`;
+    const url = `${process.env.REACT_APP_BASE_URL}/tasks/${task.id}`;
     await axios.patch(url, {
       completed: !isComplete,
     });
@@ -27,11 +39,12 @@ const Taskitem = ({ id, completed, description, title }: TaskitemInterface) => {
       disablePadding={true}
       className={`task-item ${isComplete && "complete"}`}
       secondaryAction={
-        <IconButton onClick={() => console.log("Pressed edit")}>
+        <IconButton onClick={handleClickOpen}>
           <Edit />
         </IconButton>
       }
     >
+      <TaskEditMenu open={open} handleClose={handleClose} task={task} />
       <ListItemButton
         disableGutters={true}
         onClick={() => changeCompletionStatus()}
@@ -41,8 +54,11 @@ const Taskitem = ({ id, completed, description, title }: TaskitemInterface) => {
           checked={isComplete}
           disableRipple={true}
         />
-        <ListItemText secondary={<>{description}</>} className="task-title">
-          {title}
+        <ListItemText
+          secondary={<>{task.description}</>}
+          className="task-title"
+        >
+          {task.title}
         </ListItemText>
       </ListItemButton>
     </ListItem>
