@@ -9,6 +9,7 @@ Just another todo app I made.
 ## TODO
 
 - [] Edit menu for tasks
+- [] Subtasks
 - [] Priorities for tasks
 - [] Google calendar events for the tasks
 - [] Dragging and dropping lists b/w boards or in same board
