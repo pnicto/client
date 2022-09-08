@@ -137,3 +137,10 @@ body {
     opacity: 0.6;
   }
 }
+
+// Task edit menu header
+.edit-task-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

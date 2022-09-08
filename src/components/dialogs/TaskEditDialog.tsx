@@ -1,3 +1,4 @@
+import { Delete } from "@mui/icons-material";
 import {
   Dialog,
   DialogTitle,
@@ -5,6 +6,7 @@ import {
   TextField,
   DialogActions,
   Button,
+  IconButton,
 } from "@mui/material";
 import axios from "axios";
 import { useState } from "react";
@@ -41,9 +43,28 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
     setTasks(updatedTasks);
   };
 
+  const deleteTask = async () => {
+    const url = `${process.env.REACT_APP_BASE_URL}/tasks/${id}`;
+    const response = await axios.delete(url);
+    console.log(response.data);
+    const updatedTasks = tasks.filter((taskItem) => task.id !== taskItem.id);
+    setTasks(updatedTasks);
+  };
+
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Edit Task</DialogTitle>
+      <DialogTitle className="edit-task-header">
+        <>Edit Task</>
+        <IconButton
+          onClick={() => {
+            handleClose();
+            deleteTask();
+          }}
+          color="error"
+        >
+          <Delete />
+        </IconButton>
+      </DialogTitle>
       <form
         onSubmit={(event) => {
           handleClose();
