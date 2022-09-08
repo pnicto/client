@@ -18,6 +18,8 @@ const TaskcardProvider = ({ children, tasks, setTasks }: Props) => {
     </taskcardContext.Provider>
   );
 };
+
+// custom hook which returns the taskcard context
 const useTaskcardContext = (): taskcardContextInterface => {
   return useContext(taskcardContext) as taskcardContextInterface;
 };

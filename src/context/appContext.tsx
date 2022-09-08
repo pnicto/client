@@ -12,12 +12,15 @@ type Props = {
   children: JSX.Element;
 };
 
-const AppProvider = ({ children }: Props) => {
+export const AppProvider = ({ children }: Props) => {
+
+  // Initial state with light theme and isLoading true
   const [state, dispatch] = useReducer(reducer, {
     isLoading: true,
     themeMode: "light",
   } as globalStateInterface);
 
+  // Function which adds either taskcard or taskboard
   const handleAddComponent = async (
     componentName: string,
     setDialogState: React.Dispatch<React.SetStateAction<boolean>>,
@@ -73,8 +76,6 @@ const AppProvider = ({ children }: Props) => {
 };
 
 // Custom hook which returns the context
-const useGlobalContext = (): globalContextInterface => {
+export const useGlobalContext = (): globalContextInterface => {
   return useContext(AppContext) as globalContextInterface;
 };
-
-export { useGlobalContext, AppProvider };

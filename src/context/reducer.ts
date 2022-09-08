@@ -61,25 +61,31 @@ export const reducer = (
         activeTaskboardId: action.payload.activeTaskboardId,
         isLoading: false,
       };
+
     case "set taskcards":
       return {
         ...state,
         currentTaskcards: action.payload,
       };
+
     case "change active taskboard":
       return { ...state, activeTaskboardId: action.payload };
+
     case "add new taskboard":
       return { ...state, tasksboards: [...state.tasksboards, action.payload] };
+
     case "add new taskcard":
       return {
         ...state,
         currentTaskcards: [...state.currentTaskcards, action.payload],
       };
+
     case "clear all taskcards":
       return {
         ...state,
         currentTaskcards: [],
       };
+
     case "update taskboard":
       const afterUpdatingBoards = state.tasksboards.map((taskboard) => {
         if (taskboard.id === state.activeTaskboardId) {
@@ -88,8 +94,10 @@ export const reducer = (
         return taskboard;
       });
       return {
-        ...state, tasksboards:[...afterUpdatingBoards]
+        ...state,
+        tasksboards: [...afterUpdatingBoards],
       };
+
     case "update taskcard":
       const afterUpdatingCards = state.currentTaskcards.map((list) => {
         if (list.id === action.payload.taskcardId) {
@@ -101,6 +109,7 @@ export const reducer = (
         ...state,
         currentTaskcards: [...afterUpdatingCards],
       };
+
     case "delete taskcard":
       const remainingTaskcards = state.currentTaskcards.filter(
         (taskcard) => taskcard.id !== action.payload
@@ -114,7 +123,6 @@ export const reducer = (
       const remainingTaskboards = state.tasksboards.filter(
         (taskboard) => taskboard.id !== action.payload.id
       );
-
       return {
         ...state,
         tasksboards: [...remainingTaskboards],

@@ -22,9 +22,9 @@ const OptionsMenu = ({
   fieldRef,
   renameAction,
 }: Props) => {
+  // Dialog actions
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
-  // Dialog Controls
   const handleClickOpen = () => {
     setIsDialogOpen(true);
   };

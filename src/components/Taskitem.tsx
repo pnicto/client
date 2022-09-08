@@ -15,9 +15,10 @@ interface Props {
   task: TaskitemInterface;
 }
 const Taskitem = ({ task }: Props) => {
-  const [isComplete, setIsComplete] = useState(task.completed);
+  // Edit dialog state
   const [open, setOpen] = useState(false);
 
+  // Edit dialog actions
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -25,6 +26,8 @@ const Taskitem = ({ task }: Props) => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const [isComplete, setIsComplete] = useState(task.completed);
 
   const changeCompletionStatus = async () => {
     const url = `${process.env.REACT_APP_BASE_URL}/tasks/${task.id}`;
@@ -44,6 +47,7 @@ const Taskitem = ({ task }: Props) => {
         </IconButton>
       }
     >
+      {/* Custom edit menu */}
       <TaskEditMenu open={open} handleClose={handleClose} task={task} />
       <ListItemButton
         disableGutters={true}

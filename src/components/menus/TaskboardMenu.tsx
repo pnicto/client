@@ -15,8 +15,8 @@ const TaskboardMenu = ({
   closeMenu,
   deleteTaskcard,
 }: Props) => {
+  // Dialog action
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  // Dialog Controls
   const handleClickOpen = () => {
     setIsDialogOpen(true);
   };

@@ -11,8 +11,6 @@ const Taskboard = () => {
   const { globalState, globalDispatch, handleAddComponent } =
     useGlobalContext();
   const { activeTaskboardId, currentTaskcards } = globalState;
-  const [open, setOpen] = useState(false);
-  const taskcardRef = useRef<HTMLInputElement>();
 
   const fetchAllTaskscards = async () => {
     const url = `${process.env.REACT_APP_BASE_URL}/taskCards/${activeTaskboardId}`;
@@ -27,7 +25,12 @@ const Taskboard = () => {
     }
   };
 
-  // Dialog controls
+  // Refs
+  const taskcardRef = useRef<HTMLInputElement>();
+
+  //Dialog actions
+  const [open, setOpen] = useState(false);
+
   const handleClickOpen = () => {
     setOpen(true);
   };

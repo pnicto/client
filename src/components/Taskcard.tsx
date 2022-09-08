@@ -14,21 +14,8 @@ type Props = {
 };
 
 const Taskcard = ({ taskcard }: Props) => {
-  const [open, setOpen] = useState(false);
-  const taskRef = useRef<HTMLInputElement>();
-  const taskcardRef = useRef<HTMLInputElement>();
   const [tasks, setTasks] = useState<TaskitemInterface[]>([]);
   const { globalDispatch } = useGlobalContext();
-  // Functions that handle the menu from MUI docs.
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const isMenuOpen = Boolean(anchorEl);
-  const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const closeMenu = () => {
-    setAnchorEl(null);
-  };
 
   const deleteTaskcard = async (taskcardId: number) => {
     const url = `${process.env.REACT_APP_BASE_URL}/taskcards/${taskcardId}`;
@@ -46,20 +33,6 @@ const Taskcard = ({ taskcard }: Props) => {
     if (getResponse.status === 200) {
       setTasks(responseData);
     }
-  };
-
-  useEffect(() => {
-    fetchAllTasks();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Dialog controls
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
   };
 
   const handleAddTask = async () => {
@@ -91,6 +64,34 @@ const Taskcard = ({ taskcard }: Props) => {
     } else {
       console.log(newListTitle);
     }
+  };
+
+  // Menu actions
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const isMenuOpen = Boolean(anchorEl);
+  const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const closeMenu = () => {
+    setAnchorEl(null);
+  };
+
+  // Refs
+  const taskRef = useRef<HTMLInputElement>();
+  const taskcardRef = useRef<HTMLInputElement>();
+
+  useEffect(() => {
+    fetchAllTasks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Dialog actions
+  const [open, setOpen] = useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (

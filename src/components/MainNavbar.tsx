@@ -15,8 +15,6 @@ import axios from "axios";
 import OptionsMenu from "./menus/OptionsMenu";
 
 const MainNavbar = () => {
-  const taskboardRef = useRef<HTMLInputElement>();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { globalState, globalDispatch } = useGlobalContext();
   const { activeTaskboardId, tasksboards } = globalState;
   const [isChecked, setIsChecked] = useState(false);
@@ -24,29 +22,20 @@ const MainNavbar = () => {
     (tasksboard) => tasksboard.id === activeTaskboardId
   );
 
-  const changeTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      globalDispatch({
-        type: "change theme",
-        payload: "dark",
-      });
-    } else {
-      globalDispatch({
-        type: "change theme",
-        payload: "light",
-      });
-    }
+  // Refs
+  const taskboardRef = useRef<HTMLInputElement>();
+
+  // Dialog actions
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const handleClickOpen = () => {
+    setIsDialogOpen(true);
   };
 
-  const handleClearAll = async () => {
-    const url = `${process.env.REACT_APP_BASE_URL}/taskcards/clearTaskcards/${activeTaskboardId}`;
-    await axios.delete(url);
-    globalDispatch({
-      type: "clear all taskcards",
-    });
+  const handleClose = () => {
+    setIsDialogOpen(false);
   };
 
-  // Functions that handle the menu from MUI docs.
+  // Menu actions
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [boardAnchorEl, setBoardAnchorEl] = useState<null | HTMLElement>(null);
   const isBoardMenuOpen = Boolean(boardAnchorEl);
@@ -60,21 +49,13 @@ const MainNavbar = () => {
   };
 
   const open = Boolean(anchorEl);
+
   const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
   const closeMenu = () => {
     setAnchorEl(null);
-  };
-
-  // Dialog Controls
-  const handleClickOpen = () => {
-    setIsDialogOpen(true);
-  };
-
-  const handleClose = () => {
-    setIsDialogOpen(false);
   };
 
   const handleRenameTaskboard = async (newBoardTitle: string) => {
@@ -102,6 +83,28 @@ const MainNavbar = () => {
     });
     closeBoardMenu();
     console.log(deleteResponse.data);
+  };
+
+  const changeTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      globalDispatch({
+        type: "change theme",
+        payload: "dark",
+      });
+    } else {
+      globalDispatch({
+        type: "change theme",
+        payload: "light",
+      });
+    }
+  };
+
+  const handleClearAll = async () => {
+    const url = `${process.env.REACT_APP_BASE_URL}/taskcards/clearTaskcards/${activeTaskboardId}`;
+    await axios.delete(url);
+    globalDispatch({
+      type: "clear all taskcards",
+    });
   };
 
   return (

@@ -5,8 +5,6 @@ import { useRef, useState } from "react";
 import AddDialog from "./dialogs/AddDialog";
 
 const MainFooter = () => {
-  const [open, setOpen] = useState(false);
-  const taskboardRef = useRef<HTMLInputElement>();
   const { globalState, globalDispatch, handleAddComponent } =
     useGlobalContext();
   const { tasksboards, activeTaskboardId } = globalState;
@@ -18,7 +16,11 @@ const MainFooter = () => {
     });
   };
 
-  // Dialog controls
+  // Refs
+  const taskboardRef = useRef<HTMLInputElement>();
+
+  // Dialog actions
+  const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
