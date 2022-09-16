@@ -9,6 +9,8 @@ import LoadingIndicator from "./components/misc/LoadingIndicator";
 import Tasksboard from "./components/Taskboard";
 import { useGlobalContext } from "./context/appContext";
 import { TaskboardInterface } from "./interfaces/interfaces";
+import { Route, Routes } from "react-router-dom";
+import { Landing, Register } from "./pages";
 
 function App() {
   const { globalState, globalDispatch } = useGlobalContext();
@@ -55,7 +57,7 @@ function App() {
 
   // Function which fetches tasksboards from server and sets active tasksboard id and tasksboards in context.
   const fetchAllTasksboards = async () => {
-    const url = `${process.env.REACT_APP_BASE_URL}/taskboards`;
+    const url = `${process.env.REACT_APP_API_URL}/taskboards`;
     const getResponse = await axios.get(url);
     const responseData: TaskboardInterface[] = getResponse.data;
 
@@ -89,17 +91,26 @@ function App() {
   }, []);
 
   return (
-    <ThemeProvider theme={theme}>
-      {isLoading ? (
-        <LoadingIndicator />
-      ) : (
-        <>
-          <MainNavbar />
-          <Tasksboard />
-          <MainFooter />
-        </>
-      )}
-    </ThemeProvider>
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/form" element={<Register />} />
+      <Route
+        path="/app"
+        element={
+          <ThemeProvider theme={theme}>
+            {isLoading ? (
+              <LoadingIndicator />
+            ) : (
+              <>
+                <MainNavbar />
+                <Tasksboard />
+                <MainFooter />
+              </>
+            )}
+          </ThemeProvider>
+        }
+      />
+    </Routes>
   );
 }
 
