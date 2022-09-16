@@ -80,6 +80,29 @@ body {
   }
 }
 
+// Register Page
+#register {
+  height: 100vh;
+  text-align: center;
+  background-color: $white;
+
+  #user-form {
+    margin: 0 auto;
+    gap: 10px;
+    min-height: 40vh;
+    max-width: 25vw;
+
+    .login-field {
+      margin: 10px;
+    }
+
+    button {
+      text-transform: capitalize;
+      font-size: 16px;
+    }
+  }
+}
+
 // Navbar
 #main-navbar {
   .MuiPaper-root {
