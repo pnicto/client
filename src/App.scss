@@ -8,6 +8,15 @@ $blue: hsl(216, 100%, 60%);
   box-sizing: border-box;
 }
 
+a {
+  text-decoration: none;
+}
+
+.btn-link {
+  text-decoration: none;
+  color: $white;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
@@ -23,6 +32,52 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+// Landing/Register main heading
+#tasks-heading {
+  display: flex;
+  font-size: 40px;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  color: $blue;
+  margin: 0;
+  padding: 0;
+  .tasks-icon {
+    font-size: 56px;
+  }
+}
+
+// Landing Page
+#landing-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: 100vh;
+  background-color: $white;
+
+  #tasks-svg {
+    min-height: 40vh;
+    max-height: 45vh;
+  }
+
+  p {
+    color: $black;
+    font-size: 18px;
+
+    a {
+      color: $blue;
+    }
+  }
+
+  button {
+    text-transform: capitalize;
+    margin-top: 40px;
+    border-radius: 10px;
+    font-size: 18px;
+  }
 }
 
 // Navbar
@@ -44,8 +99,8 @@ body {
       justify-content: space-evenly;
 
       button {
-        margin-right: 1rem;
         text-transform: capitalize;
+        margin-right: 1rem;
         margin-bottom: 0.4rem;
       }
     }
@@ -65,7 +120,9 @@ body {
     justify-content: center;
     height: 4rem;
     display: flex;
+
     button {
+      text-transform: capitalize;
       display: flex;
       justify-content: center;
       align-content: center;
@@ -73,7 +130,6 @@ body {
       transition: transform 0.4s ease;
       margin: 0 0.6rem;
       border: 1px solid $black;
-      text-transform: capitalize;
     }
 
     button.active {
@@ -93,7 +149,6 @@ body {
 }
 
 // Taskcard
-
 #taskboard {
   .taskcard {
     margin-top: 0.5rem;
