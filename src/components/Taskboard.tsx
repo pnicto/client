@@ -13,7 +13,7 @@ const Taskboard = () => {
   const { activeTaskboardId, currentTaskcards } = globalState;
 
   const fetchAllTaskscards = async () => {
-    const url = `${process.env.REACT_APP_BASE_URL}/taskCards/${activeTaskboardId}`;
+    const url = `${process.env.REACT_APP_API_URL}/taskCards/${activeTaskboardId}`;
     const getResponse = await axios.get(url);
     const responseData: TaskcardInterface[] = getResponse.data;
 

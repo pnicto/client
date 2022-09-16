@@ -30,7 +30,7 @@ const Taskitem = ({ task }: Props) => {
   const [isComplete, setIsComplete] = useState(task.completed);
 
   const changeCompletionStatus = async () => {
-    const url = `${process.env.REACT_APP_BASE_URL}/tasks/${task.id}`;
+    const url = `${process.env.REACT_APP_API_URL}/tasks/${task.id}`;
     await axios.patch(url, {
       completed: !isComplete,
     });

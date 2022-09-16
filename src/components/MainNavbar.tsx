@@ -60,7 +60,7 @@ const MainNavbar = () => {
 
   const handleRenameTaskboard = async (newBoardTitle: string) => {
     if (newBoardTitle) {
-      const url = `${process.env.REACT_APP_BASE_URL}/taskboards/${activeTaskboardId}`;
+      const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
       await axios.patch(url, {
         cardTitle: newBoardTitle,
       });
@@ -74,7 +74,7 @@ const MainNavbar = () => {
   };
 
   const deleteTaskboard = async () => {
-    const url = `${process.env.REACT_APP_BASE_URL}/taskboards/${activeTaskboardId}`;
+    const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
     const deleteResponse = await axios.delete(url);
     const deletedTaskboard = deleteResponse.data;
     globalDispatch({
@@ -100,7 +100,7 @@ const MainNavbar = () => {
   };
 
   const handleClearAll = async () => {
-    const url = `${process.env.REACT_APP_BASE_URL}/taskcards/clearTaskcards/${activeTaskboardId}`;
+    const url = `${process.env.REACT_APP_API_URL}/taskcards/clearTaskcards/${activeTaskboardId}`;
     await axios.delete(url);
     globalDispatch({
       type: "clear all taskcards",

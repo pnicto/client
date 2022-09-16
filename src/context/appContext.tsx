@@ -32,7 +32,7 @@ export const AppProvider = ({ children }: Props) => {
           const postBody = {
             taskboardTitle: componentName,
           };
-          const url = `${process.env.REACT_APP_BASE_URL}/taskboards`;
+          const url = `${process.env.REACT_APP_API_URL}/taskboards`;
           const postResponse = await axios.post(url, postBody);
           const newTaskboard = postResponse.data;
           dispatch({
@@ -44,7 +44,7 @@ export const AppProvider = ({ children }: Props) => {
         break;
       case "taskcard":
         {
-          const url = `${process.env.REACT_APP_BASE_URL}/taskCards/${state.activeTaskboardId}`;
+          const url = `${process.env.REACT_APP_API_URL}/taskCards/${state.activeTaskboardId}`;
           const postBody = {
             cardTitle: componentName,
           };
