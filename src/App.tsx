@@ -11,10 +11,13 @@ import { useGlobalContext } from "./context/appContext";
 import { TaskboardInterface } from "./interfaces/interfaces";
 import { Route, Routes } from "react-router-dom";
 import { Landing, Register } from "./pages";
+import AlertSnackbar from "./components/misc/AlertSnackbar";
+
+axios.defaults.withCredentials = true;
 
 function App() {
   const { globalState, globalDispatch } = useGlobalContext();
-  const { isLoading, themeMode } = globalState;
+  const { isLoading, themeMode, user } = globalState;
 
   const theme = createTheme({
     palette: {
@@ -86,9 +89,11 @@ function App() {
   };
 
   useEffect(() => {
-    fetchAllTasksboards();
+    if (user) {
+      fetchAllTasksboards();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   return (
     <Routes>
@@ -105,6 +110,7 @@ function App() {
                 <MainNavbar />
                 <Tasksboard />
                 <MainFooter />
+                <AlertSnackbar />
               </>
             )}
           </ThemeProvider>
