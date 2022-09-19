@@ -67,6 +67,13 @@ export type ACTIONS =
         message: string;
         isOpen: boolean;
       };
+    }
+  | {
+      type: "set session token";
+      payload: string;
+    }
+  | {
+      type: "logout user";
     };
 
 export const reducer = (
@@ -183,6 +190,18 @@ export const reducer = (
         },
       };
 
+    case "set session token":
+      sessionStorage.setItem("token", action.payload);
+      return {
+        ...state,
+      };
+
+    case "logout user":
+      sessionStorage.removeItem("token");
+      return {
+        ...state,
+      };
+    
     default:
       throw new Error("Reducer error");
   }
