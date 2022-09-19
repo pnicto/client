@@ -1,3 +1,4 @@
+import { AlertColor } from "@mui/material";
 import {
   globalStateInterface,
   TaskboardInterface,
@@ -54,6 +55,17 @@ export type ACTIONS =
         email: string;
         id: number;
         username: string;
+      };
+    }
+  | {
+      type: "close snackbar";
+    }
+  | {
+      type: "update snackbar";
+      payload: {
+        severity: AlertColor;
+        message: string;
+        isOpen: boolean;
       };
     };
 
@@ -148,6 +160,27 @@ export const reducer = (
       return {
         ...state,
         user: action.payload,
+      };
+
+    case "close snackbar":
+      return {
+        ...state,
+        snackbarState: {
+          ...state.snackbarState,
+          isOpen: false,
+        },
+      };
+
+    case "update snackbar":
+      const { isOpen, message, severity } = action.payload;
+      return {
+        ...state,
+        snackbarState: {
+          ...state.snackbarState,
+          isOpen,
+          message,
+          severity,
+        },
       };
 
     default:
