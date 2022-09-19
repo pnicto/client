@@ -17,7 +17,8 @@ axios.defaults.withCredentials = true;
 
 function App() {
   const { globalState, globalDispatch } = useGlobalContext();
-  const { isLoading, themeMode, user } = globalState;
+  const { isLoading, themeMode } = globalState;
+  const token = sessionStorage.getItem("token");
 
   const theme = createTheme({
     palette: {
@@ -89,11 +90,9 @@ function App() {
   };
 
   useEffect(() => {
-    if (user) {
-      fetchAllTasksboards();
-    }
+    if (token) fetchAllTasksboards();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, []);
 
   return (
     <Routes>
