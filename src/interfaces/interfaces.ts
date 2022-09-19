@@ -1,7 +1,14 @@
+import { AlertColor } from "@mui/material";
 import { ACTIONS } from "../context/reducer";
 export interface TaskboardInterface {
   id: number;
   boardTitle: string;
+}
+
+export interface snackbarStateInterface {
+  isOpen: boolean;
+  message: string;
+  severity: AlertColor;
 }
 
 export interface globalStateInterface {
@@ -11,6 +18,7 @@ export interface globalStateInterface {
   themeMode: "dark" | "light";
   currentTaskcards: TaskcardInterface[];
   user?: { email: string; id: number; username: string };
+  snackbarState: snackbarStateInterface;
 }
 
 export interface globalContextInterface {
