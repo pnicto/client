@@ -47,6 +47,14 @@ export type ACTIONS =
     }
   | {
       type: "clear all taskcards";
+    }
+  | {
+      type: "login user";
+      payload: {
+        email: string;
+        id: number;
+        username: string;
+      };
     };
 
 export const reducer = (
@@ -134,6 +142,12 @@ export const reducer = (
       return {
         ...state,
         themeMode: action.payload,
+      };
+
+    case "login user":
+      return {
+        ...state,
+        user: action.payload,
       };
 
     default:
