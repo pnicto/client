@@ -164,6 +164,7 @@ export const reducer = (
       };
 
     case "login user":
+      sessionStorage.setItem("user", JSON.stringify(action.payload));
       return {
         ...state,
         user: action.payload,
@@ -201,7 +202,7 @@ export const reducer = (
       return {
         ...state,
       };
-    
+
     default:
       throw new Error("Reducer error");
   }
