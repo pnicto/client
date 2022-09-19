@@ -13,6 +13,9 @@ import { styled } from "@mui/material/styles";
 import AlertDialog from "./dialogs/AlertDialog";
 import axios from "axios";
 import OptionsMenu from "./menus/OptionsMenu";
+import { useNavigate } from "react-router-dom";
+
+axios.defaults.withCredentials = true;
 
 const MainNavbar = () => {
   const { globalState, globalDispatch } = useGlobalContext();
@@ -21,7 +24,7 @@ const MainNavbar = () => {
   const activeTasksboard = tasksboards.find(
     (tasksboard) => tasksboard.id === activeTaskboardId
   );
-
+  const navigate = useNavigate();
   // Refs
   const taskboardRef = useRef<HTMLInputElement>();
 
@@ -107,6 +110,24 @@ const MainNavbar = () => {
     });
   };
 
+  const handleLogout = async () => {
+    const url = `${process.env.REACT_APP_BASE_URL}/user/logout`;
+    const getResponse = await axios.get(url);
+    if (getResponse.status === 200) {
+      globalDispatch({
+        type: "logout user",
+      });
+      globalDispatch({
+        type: "update snackbar",
+        payload: {
+          isOpen: true,
+          message: "Successfully logged out!!",
+          severity: "info",
+        },
+      });
+      navigate("/");
+    }
+  };
   return (
     <nav id="main-navbar">
       <Paper square={true} elevation={3}>
@@ -164,6 +185,7 @@ const MainNavbar = () => {
                 }}
               />
             </MenuItem>
+            <MenuItem onClick={handleLogout}>Log out</MenuItem>
           </Menu>
         </div>
       </Paper>
