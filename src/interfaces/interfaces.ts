@@ -1,5 +1,4 @@
 import { ACTIONS } from "../context/reducer";
-
 export interface TaskboardInterface {
   id: number;
   boardTitle: string;
@@ -11,6 +10,7 @@ export interface globalStateInterface {
   isLoading: boolean;
   themeMode: "dark" | "light";
   currentTaskcards: TaskcardInterface[];
+  user?: { email: string; id: number; username: string };
 }
 
 export interface globalContextInterface {
