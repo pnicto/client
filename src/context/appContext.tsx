@@ -13,11 +13,15 @@ type Props = {
 };
 
 export const AppProvider = ({ children }: Props) => {
-
   // Initial state with light theme and isLoading true
   const [state, dispatch] = useReducer(reducer, {
     isLoading: true,
     themeMode: "light",
+    snackbarState: {
+      isOpen: false,
+      message: "Generic message",
+      severity: "info",
+    },
   } as globalStateInterface);
 
   // Function which adds either taskcard or taskboard
