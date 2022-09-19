@@ -8,8 +8,6 @@ import jwt_decode from "jwt-decode";
 import { useGlobalContext } from "../context/appContext";
 import AlertSnackbar from "../components/misc/AlertSnackbar";
 
-const token = sessionStorage.getItem("token");
-
 const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const pageMode: "login" | "register" = useLocation().state ?? "login";
@@ -17,11 +15,13 @@ const Register = () => {
   const passwordRef = useRef<HTMLInputElement>();
   const usernameRef = useRef<HTMLInputElement>();
   const { globalDispatch } = useGlobalContext();
+  const token = sessionStorage.getItem("token");
+  const user = sessionStorage.getItem("user");
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (token) {
+    if (token && user) {
       navigate("/app");
       globalDispatch({
         type: "update snackbar",
@@ -32,6 +32,7 @@ const Register = () => {
         },
       });
     }
+
     google.accounts.id.initialize({
       client_id: process.env.REACT_APP_CLIENT_ID as string,
       callback: handleCredentialResponse,
