@@ -14,14 +14,81 @@ const Register = () => {
   const emailRef = useRef<HTMLInputElement>();
   const passwordRef = useRef<HTMLInputElement>();
   const usernameRef = useRef<HTMLInputElement>();
-  const { globalDispatch } = useGlobalContext();
-  const token = sessionStorage.getItem("token");
-  const user = sessionStorage.getItem("user");
+  const { globalDispatch, globalState } = useGlobalContext();
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (token && user) {
+    const handleCredentialResponse = async (
+      response: google.accounts.id.CredentialResponse
+    ) => {
+      const { email, email_verified, name, iss } = jwt_decode(
+        response.credential
+      ) as {
+        email: string;
+        email_verified: string;
+        name: string;
+        iss: string;
+      };
+
+      if (email_verified) {
+        const url = `${process.env.REACT_APP_BASE_URL}/user/${pageMode}`;
+        const postBody = {
+          email,
+          username: name,
+          iss,
+        };
+
+        let postResponse: AxiosResponse<any, any>;
+        switch (pageMode) {
+          case "login":
+            postResponse = await axios.post(url, postBody);
+            if (postResponse.status === 200) {
+              globalDispatch({
+                type: "login user",
+                payload: postResponse.data.user as {
+                  email: string;
+                  id: number;
+                  username: string;
+                },
+              });
+              globalDispatch({
+                type: "set session token",
+                payload: postResponse.data.accessToken,
+              });
+              navigate("/app");
+              globalDispatch({
+                type: "update snackbar",
+                payload: {
+                  isOpen: true,
+                  message: "Login successful",
+                  severity: "success",
+                },
+              });
+            }
+            break;
+          case "register":
+            postResponse = await axios.post(url, postBody);
+            if (postResponse.status === 201) {
+              navigate("/form", {
+                state: "login",
+              });
+              globalDispatch({
+                type: "update snackbar",
+                payload: {
+                  isOpen: true,
+                  severity: "success",
+                  message: "Registration successful. Please login to continue",
+                },
+              });
+            }
+
+            break;
+        }
+      }
+    };
+
+    if (globalState.isLoggedIn) {
       navigate("/app");
       globalDispatch({
         type: "update snackbar",
@@ -48,8 +115,7 @@ const Register = () => {
       }
     );
     google.accounts.id.prompt();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageMode]);
+  }, [globalDispatch, globalState.isLoggedIn, navigate, pageMode]);
 
   const handleFormSubmit = async () => {
     setIsLoading(true);
@@ -126,75 +192,6 @@ const Register = () => {
           message: "Registration successful. Please login to continue",
         },
       });
-    }
-  };
-
-  const handleCredentialResponse = async (
-    response: google.accounts.id.CredentialResponse
-  ) => {
-    const { email, email_verified, name, iss } = jwt_decode(
-      response.credential
-    ) as {
-      email: string;
-      email_verified: string;
-      name: string;
-      iss: string;
-    };
-
-    if (email_verified) {
-      const url = `${process.env.REACT_APP_BASE_URL}/user/${pageMode}`;
-      const postBody = {
-        email,
-        username: name,
-        iss,
-      };
-
-      let postResponse: AxiosResponse<any, any>;
-      switch (pageMode) {
-        case "login":
-          postResponse = await axios.post(url, postBody);
-          if (postResponse.status === 200) {
-            globalDispatch({
-              type: "login user",
-              payload: postResponse.data.user as {
-                email: string;
-                id: number;
-                username: string;
-              },
-            });
-            navigate("/app");
-            globalDispatch({
-              type: "set session token",
-              payload: postResponse.data.accessToken,
-            });
-            globalDispatch({
-              type: "update snackbar",
-              payload: {
-                isOpen: true,
-                message: "Login successful",
-                severity: "success",
-              },
-            });
-          }
-          break;
-        case "register":
-          postResponse = await axios.post(url, postBody);
-          if (postResponse.status === 201) {
-            navigate("/form", {
-              state: "login",
-            });
-            globalDispatch({
-              type: "update snackbar",
-              payload: {
-                isOpen: true,
-                severity: "success",
-                message: "Registration successful. Please login to continue",
-              },
-            });
-          }
-
-          break;
-      }
     }
   };
 

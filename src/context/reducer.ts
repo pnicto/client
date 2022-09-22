@@ -8,7 +8,17 @@ import {
 export type ACTIONS =
   | {
       type: "set taskboards";
-      payload: { taskboards: TaskboardInterface[]; activeTaskboardId: number };
+      payload: {
+        taskboards: {
+          userTaskboards: TaskboardInterface[];
+          sharedTaskboards?: TaskboardInterface[];
+        };
+        activeTaskboardId: number;
+      };
+    }
+  | {
+      type: "change loading state";
+      payload: boolean;
     }
   | {
       type: "set taskcards";
@@ -84,7 +94,7 @@ export const reducer = (
     case "set taskboards":
       return {
         ...state,
-        tasksboards: action.payload.taskboards,
+        taskboards: action.payload.taskboards,
         activeTaskboardId: action.payload.activeTaskboardId,
         isLoading: false,
       };
@@ -98,8 +108,20 @@ export const reducer = (
     case "change active taskboard":
       return { ...state, activeTaskboardId: action.payload };
 
+    case "change loading state":
+      return {
+        ...state,
+        isLoading: action.payload,
+      };
+
     case "add new taskboard":
-      return { ...state, tasksboards: [...state.tasksboards, action.payload] };
+      return {
+        ...state,
+        taskboards: {
+          userTaskboards: [...state.taskboards.userTaskboards, action.payload],
+          sharedTaskboards: state.taskboards.sharedTaskboards,
+        },
+      };
 
     case "add new taskcard":
       return {
@@ -114,15 +136,20 @@ export const reducer = (
       };
 
     case "update taskboard":
-      const afterUpdatingBoards = state.tasksboards.map((taskboard) => {
-        if (taskboard.id === state.activeTaskboardId) {
-          taskboard.boardTitle = action.payload;
+      const afterUpdatingBoards = state.taskboards.userTaskboards.map(
+        (taskboard) => {
+          if (taskboard.id === state.activeTaskboardId) {
+            taskboard.boardTitle = action.payload;
+          }
+          return taskboard;
         }
-        return taskboard;
-      });
+      );
       return {
         ...state,
-        tasksboards: [...afterUpdatingBoards],
+        taskboards: {
+          ...state.taskboards,
+          userTaskboards: afterUpdatingBoards,
+        },
       };
 
     case "update taskcard":
@@ -147,12 +174,15 @@ export const reducer = (
       };
 
     case "delete taskboard":
-      const remainingTaskboards = state.tasksboards.filter(
+      const remainingTaskboards = state.taskboards.userTaskboards.filter(
         (taskboard) => taskboard.id !== action.payload.id
       );
       return {
         ...state,
-        tasksboards: [...remainingTaskboards],
+        taskboards: {
+          ...state.taskboards,
+          userTaskboards: remainingTaskboards,
+        },
         activeTaskboardId:
           remainingTaskboards[remainingTaskboards.length - 1].id,
       };
@@ -167,7 +197,6 @@ export const reducer = (
       sessionStorage.setItem("user", JSON.stringify(action.payload));
       return {
         ...state,
-        user: action.payload,
       };
 
     case "close snackbar":

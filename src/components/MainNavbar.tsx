@@ -19,9 +19,10 @@ axios.defaults.withCredentials = true;
 
 const MainNavbar = () => {
   const { globalState, globalDispatch } = useGlobalContext();
-  const { activeTaskboardId, tasksboards } = globalState;
   const [isChecked, setIsChecked] = useState(false);
-  const activeTasksboard = tasksboards.find(
+  const { activeTaskboardId, taskboards } = globalState;
+  const {userTaskboards}= taskboards
+  const activeTasksboard = userTaskboards.find(
     (tasksboard) => tasksboard.id === activeTaskboardId
   );
   const navigate = useNavigate();

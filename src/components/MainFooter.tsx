@@ -7,8 +7,8 @@ import AddDialog from "./dialogs/AddDialog";
 const MainFooter = () => {
   const { globalState, globalDispatch, handleAddComponent } =
     useGlobalContext();
-  const { tasksboards, activeTaskboardId } = globalState;
-
+  const { taskboards, activeTaskboardId } = globalState;
+  const { userTaskboards } = taskboards;
   const changeActiveTaskboard = (tasksboardId: number) => {
     globalDispatch({
       type: "change active taskboard",
@@ -32,7 +32,7 @@ const MainFooter = () => {
   return (
     <div id="main-footer">
       <Paper square={true} elevation={3}>
-        {tasksboards.map((tasksboard) => {
+        {userTaskboards.map((tasksboard) => {
           // Scale the button which shows the active tasksboard.
           if (activeTaskboardId === tasksboard.id) {
             return (

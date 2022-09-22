@@ -3,6 +3,7 @@ import { ACTIONS } from "../context/reducer";
 export interface TaskboardInterface {
   id: number;
   boardTitle: string;
+  sharedUsers: number[];
 }
 
 export interface snackbarStateInterface {
@@ -12,12 +13,15 @@ export interface snackbarStateInterface {
 }
 
 export interface globalStateInterface {
+  isLoggedIn: boolean;
   activeTaskboardId: number;
-  tasksboards: TaskboardInterface[];
+  taskboards: {
+    userTaskboards: TaskboardInterface[];
+    sharedTaskboards?: TaskboardInterface[];
+  };
   isLoading: boolean;
   themeMode: "dark" | "light";
   currentTaskcards: TaskcardInterface[];
-  user?: { email: string; id: number; username: string };
   snackbarState: snackbarStateInterface;
 }
 

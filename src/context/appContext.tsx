@@ -14,7 +14,10 @@ type Props = {
 
 export const AppProvider = ({ children }: Props) => {
   // Initial state with light theme and isLoading true
+  const token = sessionStorage.getItem("token");
+
   const [state, dispatch] = useReducer(reducer, {
+    isLoggedIn: token !== null ? true : false,
     isLoading: true,
     themeMode: "light",
     snackbarState: {
