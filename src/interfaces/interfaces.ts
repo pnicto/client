@@ -4,6 +4,7 @@ export interface TaskboardInterface {
   id: number;
   boardTitle: string;
   sharedUsers: number[];
+  userId?: number;
 }
 
 export interface snackbarStateInterface {
@@ -23,6 +24,7 @@ export interface globalStateInterface {
   themeMode: "dark" | "light";
   currentTaskcards: TaskcardInterface[];
   snackbarState: snackbarStateInterface;
+  isShared?: boolean;
 }
 
 export interface globalContextInterface {
