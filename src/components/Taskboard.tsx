@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import { Card, ListItemButton, Paper } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useGlobalContext } from "../context/appContext";
@@ -8,23 +9,11 @@ import axios from "axios";
 import { TaskcardInterface } from "../interfaces/interfaces";
 
 const Taskboard = () => {
+  const [isShared, setIsShared] = useState(false);
   const { globalState, globalDispatch, handleAddComponent } =
     useGlobalContext();
-  const { activeTaskboardId, currentTaskcards } = globalState;
-
-  const fetchAllTaskscards = async () => {
-    const url = `${process.env.REACT_APP_API_URL}/taskCards/${activeTaskboardId}`;
-    const getResponse = await axios.get(url);
-    const responseData: TaskcardInterface[] = getResponse.data;
-
-    if (getResponse.status === 200) {
-      globalDispatch({
-        type: "set taskcards",
-        payload: responseData,
-      });
-    }
-  };
-
+  const { activeTaskboardId, currentTaskcards, taskboards } = globalState;
+  const { userTaskboards, sharedTaskboards } = taskboards;
   // Refs
   const taskcardRef = useRef<HTMLInputElement>();
 
@@ -40,11 +29,49 @@ const Taskboard = () => {
   };
 
   useEffect(() => {
-    fetchAllTaskscards();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTaskboardId]);
+    sharedTaskboards?.find((taskboard) => {
+      if (taskboard.id === activeTaskboardId) setIsShared(true);
+    });
 
-  return (
+    userTaskboards.find((taskboard) => {
+      if (taskboard.id === activeTaskboardId) setIsShared(false);
+    });
+    globalDispatch({
+      type: "change shared board state",
+      payload: isShared,
+    });
+    const fetchAllTaskscards = async () => {
+      let url;
+      if (isShared) {
+        const activeTaskboard = sharedTaskboards?.find(
+          (taskboard) => taskboard.id === activeTaskboardId
+        );
+        url = `${process.env.REACT_APP_API_URL}/taskCards/${activeTaskboardId}/${activeTaskboard?.userId}`;
+      } else {
+        url = `${process.env.REACT_APP_API_URL}/taskCards/${activeTaskboardId}`;
+      }
+      const getResponse = await axios.get(url);
+
+      const responseData: TaskcardInterface[] = getResponse.data;
+
+      if (getResponse.status === 200) {
+        globalDispatch({
+          type: "set taskcards",
+          payload: responseData,
+        });
+      }
+    };
+
+    fetchAllTaskscards();
+  }, [
+    activeTaskboardId,
+    globalDispatch,
+    isShared,
+    sharedTaskboards,
+    userTaskboards,
+  ]);
+
+  return !isShared ? (
     <Paper square={true}>
       <div id="taskboard">
         {currentTaskcards?.map((taskcard) => {
@@ -69,6 +96,14 @@ const Taskboard = () => {
           }}
           open={open}
         />{" "}
+      </div>
+    </Paper>
+  ) : (
+    <Paper square={true}>
+      <div id="taskboard">
+        {currentTaskcards?.map((taskcard) => {
+          return <Taskcard key={taskcard.id} taskcard={taskcard}></Taskcard>;
+        })}
       </div>
     </Paper>
   );
