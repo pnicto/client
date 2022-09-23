@@ -20,12 +20,14 @@ axios.defaults.withCredentials = true;
 const MainNavbar = () => {
   const { globalState, globalDispatch } = useGlobalContext();
   const [isChecked, setIsChecked] = useState(false);
-  const { activeTaskboardId, taskboards } = globalState;
-  const {userTaskboards}= taskboards
-  const activeTasksboard = userTaskboards.find(
-    (tasksboard) => tasksboard.id === activeTaskboardId
-  );
+  const { activeTaskboardId, taskboards, isShared } = globalState;
+  const { userTaskboards, sharedTaskboards } = taskboards;
+  const activeTasksboard =
+    userTaskboards.find((tasksboard) => tasksboard.id === activeTaskboardId) ??
+    sharedTaskboards?.find((taskboard) => taskboard.id === activeTaskboardId);
+
   const navigate = useNavigate();
+
   // Refs
   const taskboardRef = useRef<HTMLInputElement>();
 
@@ -66,7 +68,7 @@ const MainNavbar = () => {
     if (newBoardTitle) {
       const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
       await axios.patch(url, {
-        cardTitle: newBoardTitle,
+        taskboardTitle: newBoardTitle,
       });
       globalDispatch({
         type: "update taskboard",
@@ -129,40 +131,63 @@ const MainNavbar = () => {
       navigate("/");
     }
   };
+
+  const shareBoard = async (emails: string[]) => {
+    const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
+    if (emails) {
+      const postBody = { emails };
+      const postResponse = await axios.patch(url, postBody);
+      console.log(postResponse.data);
+    }
+  };
+
   return (
     <nav id="main-navbar">
       <Paper square={true} elevation={3}>
         <div id="board-title">
           <h3>{activeTasksboard?.boardTitle}</h3>
-          <IconButton aria-label="more board actions" onClick={openBoardMenu}>
-            <MoreVert />
-          </IconButton>
-          <OptionsMenu
-            anchorEl={boardAnchorEl}
-            open={isBoardMenuOpen}
-            component="board"
-            closeMenu={closeBoardMenu}
-            deleteAction={deleteTaskboard}
-            fieldRef={taskboardRef}
-            renameAction={() => {
-              const newBoardTitle = taskboardRef.current?.value;
-              if (newBoardTitle) {
-                return handleRenameTaskboard(newBoardTitle);
-              }
-            }}
-          />
+          {!isShared && (
+            <>
+              <IconButton
+                aria-label="more board actions"
+                onClick={openBoardMenu}
+              >
+                <MoreVert />
+              </IconButton>
+
+              <OptionsMenu
+                anchorEl={boardAnchorEl}
+                open={isBoardMenuOpen}
+                component="board"
+                closeMenu={closeBoardMenu}
+                fieldRef={taskboardRef}
+                deleteAction={deleteTaskboard}
+                shareAction={shareBoard}
+                renameAction={() => {
+                  const newBoardTitle = taskboardRef.current?.value;
+                  if (newBoardTitle) {
+                    return handleRenameTaskboard(newBoardTitle);
+                  }
+                }}
+              />
+            </>
+          )}
         </div>
         <div id="nav-button-group">
-          <Button variant="contained" onClick={handleClickOpen}>
-            clear current
-          </Button>
-          <AlertDialog
-            dialogTitle="Are you sure?"
-            handleClose={handleClose}
-            open={isDialogOpen}
-            handleAlert={handleClearAll}
-          />
-          <Button variant="contained">export</Button>
+          {!isShared && (
+            <>
+              <Button variant="contained" onClick={handleClickOpen}>
+                clear current
+              </Button>
+              <AlertDialog
+                dialogTitle="Are you sure?"
+                handleClose={handleClose}
+                open={isDialogOpen}
+                handleAlert={handleClearAll}
+              />
+            </>
+          )}
+          {/* <Button variant="contained">export</Button> */}
           <IconButton aria-label="more actions" onClick={openMenu}>
             <MoreHoriz />
           </IconButton>
