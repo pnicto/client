@@ -2,6 +2,7 @@ import { Menu, MenuItem } from "@mui/material";
 import { useState } from "react";
 import AlertDialog from "../dialogs/AlertDialog";
 import AddDialog from "../dialogs/AddDialog";
+import ShareDialog from "../dialogs/ShareDialog";
 
 type Props = {
   anchorEl: HTMLElement | null;
@@ -11,6 +12,7 @@ type Props = {
   deleteAction: () => Promise<void>;
   renameAction: () => Promise<void> | undefined;
   fieldRef: React.MutableRefObject<HTMLInputElement | undefined>;
+  shareAction?: (emails: string[]) => Promise<void>;
 };
 
 const OptionsMenu = ({
@@ -19,12 +21,15 @@ const OptionsMenu = ({
   open,
   closeMenu,
   deleteAction,
-  fieldRef,
   renameAction,
+  shareAction,
+  fieldRef,
 }: Props) => {
   // Dialog actions
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+
   const handleClickOpen = () => {
     setIsDialogOpen(true);
   };
@@ -39,6 +44,14 @@ const OptionsMenu = ({
 
   const handleRenameDialogClose = () => {
     setIsRenameDialogOpen(false);
+  };
+
+  const handleShareDialogOpen = () => {
+    setIsShareDialogOpen(true);
+  };
+
+  const handleShareDialogClose = () => {
+    setIsShareDialogOpen(false);
   };
 
   return (
@@ -78,6 +91,22 @@ const OptionsMenu = ({
         handleClose={handleClose}
         handleAlert={deleteAction}
       />
+      {component === "board" && [
+        <MenuItem
+          key={1}
+          onClick={() => {
+            handleShareDialogOpen();
+          }}
+        >
+          Share {component}
+        </MenuItem>,
+        <ShareDialog
+          key={2}
+          open={isShareDialogOpen}
+          handleClose={handleShareDialogClose}
+          handleShare={shareAction}
+        />,
+      ]}
     </Menu>
   );
 };
