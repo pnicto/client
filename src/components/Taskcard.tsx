@@ -15,8 +15,8 @@ type Props = {
 
 const Taskcard = ({ taskcard }: Props) => {
   const [tasks, setTasks] = useState<TaskitemInterface[]>([]);
-  const { globalDispatch } = useGlobalContext();
-
+  const { globalDispatch, globalState } = useGlobalContext();
+  const { isShared } = globalState;
   const deleteTaskcard = async (taskcardId: number) => {
     const url = `${process.env.REACT_APP_API_URL}/taskcards/${taskcardId}`;
     await axios.delete(url);
@@ -98,36 +98,38 @@ const Taskcard = ({ taskcard }: Props) => {
     <Card className="taskcard" elevation={3}>
       <div className="card-header">
         <h4 className="card-title">{taskcard.cardTitle}</h4>
-        <div className="card-buttons">
-          <IconButton onClick={handleClickOpen}>
-            <AddCircle color="primary" />
-          </IconButton>
-          <AddDialog
-            dialogLabel="Add a task"
-            dialogTitle="Task"
-            fieldRef={taskRef}
-            handleClose={handleClose}
-            handleSubmit={handleAddTask}
-            open={open}
-          />
-          <IconButton aria-label="more card actions" onClick={openMenu}>
-            <MoreVert />
-          </IconButton>
-          <OptionsMenu
-            anchorEl={anchorEl}
-            closeMenu={closeMenu}
-            open={isMenuOpen}
-            component="list"
-            fieldRef={taskcardRef}
-            deleteAction={() => deleteTaskcard(taskcard.id)}
-            renameAction={() => {
-              const newListTitle = taskcardRef.current?.value;
-              if (newListTitle) {
-                return handleRenameList(newListTitle);
-              }
-            }}
-          />
-        </div>
+        {!isShared && (
+          <div className="card-buttons">
+            <IconButton onClick={handleClickOpen}>
+              <AddCircle color="primary" />
+            </IconButton>
+            <AddDialog
+              dialogLabel="Add a task"
+              dialogTitle="Task"
+              fieldRef={taskRef}
+              handleClose={handleClose}
+              handleSubmit={handleAddTask}
+              open={open}
+            />
+            <IconButton aria-label="more card actions" onClick={openMenu}>
+              <MoreVert />
+            </IconButton>
+            <OptionsMenu
+              anchorEl={anchorEl}
+              closeMenu={closeMenu}
+              open={isMenuOpen}
+              component="list"
+              fieldRef={taskcardRef}
+              deleteAction={() => deleteTaskcard(taskcard.id)}
+              renameAction={() => {
+                const newListTitle = taskcardRef.current?.value;
+                if (newListTitle) {
+                  return handleRenameList(newListTitle);
+                }
+              }}
+            />
+          </div>
+        )}
       </div>
       <TaskcardProvider tasks={tasks} setTasks={setTasks}>
         <List>
