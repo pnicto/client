@@ -1,5 +1,6 @@
 // Variables
 $white: hsl(210, 100%, 98%);
+$grey: hsl(0, 0%, 84%);
 $black: hsl(198, 24%, 16%);
 $blue: hsl(216, 100%, 60%);
 
@@ -88,7 +89,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  
+
   #user-form {
     margin: 0 auto;
     gap: 10px;
@@ -160,6 +161,10 @@ body {
 
     button.active {
       transform: scale(1.2);
+    }
+
+    .shared {
+      background-color: $grey;
     }
   }
 }
