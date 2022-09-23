@@ -84,6 +84,10 @@ export type ACTIONS =
     }
   | {
       type: "logout user";
+    }
+  | {
+      type: "change shared board state";
+      payload: boolean;
     };
 
 export const reducer = (
@@ -230,6 +234,12 @@ export const reducer = (
       sessionStorage.removeItem("token");
       return {
         ...state,
+      };
+
+    case "change shared board state":
+      return {
+        ...state,
+        isShared: action.payload,
       };
 
     default:
