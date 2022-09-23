@@ -8,7 +8,7 @@ const MainFooter = () => {
   const { globalState, globalDispatch, handleAddComponent } =
     useGlobalContext();
   const { taskboards, activeTaskboardId } = globalState;
-  const { userTaskboards } = taskboards;
+  const { userTaskboards, sharedTaskboards } = taskboards;
   const changeActiveTaskboard = (tasksboardId: number) => {
     globalDispatch({
       type: "change active taskboard",
@@ -59,6 +59,34 @@ const MainFooter = () => {
             );
           }
         })}
+        {sharedTaskboards?.map((taskboard) => {
+          if (activeTaskboardId === taskboard.id) {
+            return (
+              <Button
+                key={taskboard.id}
+                variant="contained"
+                color="secondary"
+                className="active shared"
+                onClick={() => changeActiveTaskboard(taskboard.id)}
+              >
+                <p>{taskboard.boardTitle}</p>
+              </Button>
+            );
+          } else {
+            return (
+              <Button
+                className="shared"
+                key={taskboard.id}
+                variant="contained"
+                color="secondary"
+                onClick={() => changeActiveTaskboard(taskboard.id)}
+              >
+                <p>{taskboard.boardTitle}</p>
+              </Button>
+            );
+          }
+        })}
+
         <Button
           onClick={handleClickOpen}
           color="secondary"
