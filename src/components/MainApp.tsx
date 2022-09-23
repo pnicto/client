@@ -53,8 +53,6 @@ const MainApp = () => {
     },
   });
   useEffect(() => {
-    console.log("Mario");
-
     const fetchAllTasksboards = async () => {
       const url = `${process.env.REACT_APP_API_URL}/taskboards`;
       const getResponse = await axios.get(url);
@@ -63,14 +61,12 @@ const MainApp = () => {
         sharedTaskboards: TaskboardInterface[];
       } = getResponse.data;
 
-      console.log("Now i am inside the func");
       if (getResponse.status === 200) {
         // If there are no tasksboards in the database, create a tasksboard and set the state.
         if (responseData.userTaskboards.length === 0) {
           const postResponse = await axios.post(url);
           const defaultTasksboard: TaskboardInterface =
             postResponse.data.userTaskboards;
-          console.log("Fetch", postResponse.data);
           globalDispatch({
             type: "set taskboards",
             payload: {
@@ -91,7 +87,6 @@ const MainApp = () => {
         }
       }
     };
-    console.log(isLoading);
 
     if (isLoading) {
       fetchAllTasksboards();
