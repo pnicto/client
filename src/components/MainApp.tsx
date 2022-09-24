@@ -65,8 +65,7 @@ const MainApp = () => {
         // If there are no tasksboards in the database, create a tasksboard and set the state.
         if (responseData.userTaskboards.length === 0) {
           const postResponse = await axios.post(url);
-          const defaultTasksboard: TaskboardInterface =
-            postResponse.data.userTaskboards;
+          const defaultTasksboard: TaskboardInterface = postResponse.data;
           globalDispatch({
             type: "set taskboards",
             payload: {
