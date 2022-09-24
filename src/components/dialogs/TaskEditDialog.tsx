@@ -45,8 +45,7 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
 
   const deleteTask = async () => {
     const url = `${process.env.REACT_APP_API_URL}/tasks/${id}`;
-    const response = await axios.delete(url);
-    console.log(response.data);
+    await axios.delete(url);
     const updatedTasks = tasks.filter((taskItem) => task.id !== taskItem.id);
     setTasks(updatedTasks);
   };
