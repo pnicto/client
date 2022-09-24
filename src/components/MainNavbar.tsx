@@ -88,7 +88,6 @@ const MainNavbar = () => {
       payload: deletedTaskboard,
     });
     closeBoardMenu();
-    console.log(deleteResponse.data);
   };
 
   const changeTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,8 +135,7 @@ const MainNavbar = () => {
     const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
     if (emails) {
       const postBody = { emails };
-      const postResponse = await axios.patch(url, postBody);
-      console.log(postResponse.data);
+      await axios.patch(url, postBody);
     }
   };
 
