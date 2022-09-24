@@ -1,12 +1,13 @@
-import { TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import TaskRoundedIcon from "@mui/icons-material/TaskRounded";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { useEffect, useRef, useState } from "react";
-import axios, { AxiosResponse } from "axios";
+import { useRef, useState } from "react";
+import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import jwt_decode from "jwt-decode";
 import { useGlobalContext } from "../context/appContext";
 import AlertSnackbar from "../components/misc/AlertSnackbar";
+import { useGoogleLogin } from "@react-oauth/google";
+import { Google } from "@mui/icons-material";
 
 const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,108 +15,9 @@ const Register = () => {
   const emailRef = useRef<HTMLInputElement>();
   const passwordRef = useRef<HTMLInputElement>();
   const usernameRef = useRef<HTMLInputElement>();
-  const { globalDispatch, globalState } = useGlobalContext();
+  const { globalDispatch } = useGlobalContext();
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const handleCredentialResponse = async (
-      response: google.accounts.id.CredentialResponse
-    ) => {
-      const { email, email_verified, name, iss } = jwt_decode(
-        response.credential
-      ) as {
-        email: string;
-        email_verified: string;
-        name: string;
-        iss: string;
-      };
-
-      if (email_verified) {
-        const url = `${process.env.REACT_APP_BASE_URL}/user/${pageMode}`;
-        const postBody = {
-          email,
-          username: name,
-          iss,
-        };
-
-        let postResponse: AxiosResponse<any, any>;
-        switch (pageMode) {
-          case "login":
-            postResponse = await axios.post(url, postBody);
-            if (postResponse.status === 200) {
-              globalDispatch({
-                type: "login user",
-                payload: postResponse.data.user as {
-                  email: string;
-                  id: number;
-                  username: string;
-                },
-              });
-              globalDispatch({
-                type: "set session token",
-                payload: postResponse.data.accessToken,
-              });
-              navigate("/app");
-              globalDispatch({
-                type: "update snackbar",
-                payload: {
-                  isOpen: true,
-                  message: "Login successful",
-                  severity: "success",
-                },
-              });
-            }
-            break;
-          case "register":
-            postResponse = await axios.post(url, postBody);
-            if (postResponse.status === 201) {
-              navigate("/form", {
-                state: "login",
-              });
-              globalDispatch({
-                type: "update snackbar",
-                payload: {
-                  isOpen: true,
-                  severity: "success",
-                  message: "Registration successful. Please login to continue",
-                },
-              });
-            }
-
-            break;
-        }
-      }
-    };
-
-    if (globalState.isLoggedIn) {
-      navigate("/app");
-      globalDispatch({
-        type: "update snackbar",
-        payload: {
-          isOpen: true,
-          message: "Login successful",
-          severity: "success",
-        },
-      });
-    }
-
-    google.accounts.id.initialize({
-      client_id: process.env.REACT_APP_CLIENT_ID as string,
-      callback: handleCredentialResponse,
-    });
-
-    google.accounts.id.renderButton(
-      document.getElementById("btn-group") as HTMLElement,
-      {
-        theme: "filled_blue",
-        type: "standard",
-        text: pageMode === "register" ? "signup_with" : "signin_with",
-        shape: "rectangular",
-      }
-    );
-    google.accounts.id.prompt();
-  }, [globalDispatch, globalState.isLoggedIn, navigate, pageMode]);
 
   const handleFormSubmit = async () => {
     setIsLoading(true);
@@ -195,6 +97,34 @@ const Register = () => {
     }
   };
 
+  const login = useGoogleLogin({
+    onSuccess: async (tokenRes) => {
+      const url = `${process.env.REACT_APP_BASE_URL}/user/login`;
+      const postResponse = await axios.post(url, {
+        code: tokenRes.code,
+      });
+      globalDispatch({
+        type: "login user",
+        payload: postResponse.data.user,
+      });
+      globalDispatch({
+        type: "update snackbar",
+        payload: {
+          isOpen: true,
+          message: "Login successful",
+          severity: "success",
+        },
+      });
+      globalDispatch({
+        type: "set session token",
+        payload: postResponse.data.accessToken,
+      });
+      navigate("/app");
+    },
+    flow: "auth-code",
+    onError: (message) => console.log(message),
+  });
+
   return (
     <>
       <div id="register">
@@ -244,7 +174,14 @@ const Register = () => {
           </LoadingButton>
           <p>Or</p>
         </form>
-        <div id="btn-group"></div>
+        {pageMode === "login" && (
+          <div id="btn-group">
+            <Button onClick={() => login()} variant="contained" id="login-btn">
+              <Google />
+              Sign in with google
+            </Button>
+          </div>
+        )}
       </div>
       <AlertSnackbar />
     </>
