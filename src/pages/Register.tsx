@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../context/appContext";
 import AlertSnackbar from "../components/misc/AlertSnackbar";
 import { useGoogleLogin } from "@react-oauth/google";
-import { Google } from "@mui/icons-material";
+import { Google, GitHub } from "@mui/icons-material";
 
 const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -173,15 +173,27 @@ const Register = () => {
             {pageMode ?? "Login"}
           </LoadingButton>
           <p>Or</p>
+          {pageMode === "login" && (
+            <div id="btn-group">
+              <Button
+                onClick={() => login()}
+                variant="contained"
+                id="login-btn"
+              >
+                <Google />
+                Sign in with google
+              </Button>
+              <Button
+                href={`https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&scope=user`}
+                variant="contained"
+                id="login-btn"
+              >
+                <GitHub />
+                Sign in with github
+              </Button>
+            </div>
+          )}
         </form>
-        {pageMode === "login" && (
-          <div id="btn-group">
-            <Button onClick={() => login()} variant="contained" id="login-btn">
-              <Google />
-              Sign in with google
-            </Button>
-          </div>
-        )}
       </div>
       <AlertSnackbar />
     </>
