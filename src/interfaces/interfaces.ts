@@ -54,4 +54,7 @@ export interface TaskitemInterface {
   completed: boolean;
   taskcardId: number;
   title: string;
+  deadlineDate: string;
+  eventStartDate: string;
+  eventEndDate: string;
 }
