@@ -20,6 +20,7 @@ import { TaskitemInterface } from "../../interfaces/interfaces";
 import { RichTextEditor } from "@mantine/rte";
 import BasicDatePicker from "../misc/BasicDatePicker";
 import { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import BasicDateTimePicker from "../misc/BasicDateTimePicker";
 interface Props {
   open: boolean;
@@ -33,11 +34,17 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   const [currentTaskDescription, setCurrentTaskDescription] =
     useState(description);
   const { tasks, setTasks } = useTaskcardContext();
-  const [taskDate, setTaskDate] = useState<Dayjs | null>(null);
+  const [taskDate, setTaskDate] = useState<Dayjs | null>(
+    dayjs(task.deadlineDate)
+  );
   const rteRef = useRef<any>();
   const [isEvent, setIsEvent] = useState<"true" | "false" | "">("");
-  const [eventStartDate, setEventStartDate] = useState<Dayjs | null>(null);
-  const [eventEndDate, setEventEndDate] = useState<Dayjs | null>(null);
+  const [eventStartDate, setEventStartDate] = useState<Dayjs | null>(
+    dayjs(task.eventStartDate)
+  );
+  const [eventEndDate, setEventEndDate] = useState<Dayjs | null>(
+    dayjs(task.eventEndDate)
+  );
 
   const handleSubmit = async () => {
     const url = `${process.env.REACT_APP_API_URL}/tasks/${id}`;
