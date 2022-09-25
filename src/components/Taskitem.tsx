@@ -11,6 +11,7 @@ import { useState } from "react";
 import { TaskitemInterface } from "../interfaces/interfaces";
 import TaskEditMenu from "../components/dialogs/TaskEditDialog";
 import { useGlobalContext } from "../context/appContext";
+import parse from "html-react-parser";
 
 interface Props {
   task: TaskitemInterface;
@@ -61,7 +62,7 @@ const Taskitem = ({ task }: Props) => {
           disableRipple={true}
         />
         <ListItemText
-          secondary={<>{task.description}</>}
+          secondary={<>{parse(task.description)}</>}
           className="task-title"
         >
           {task.title}
