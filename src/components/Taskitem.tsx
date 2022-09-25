@@ -62,7 +62,7 @@ const Taskitem = ({ task }: Props) => {
           disableRipple={true}
         />
         <ListItemText
-          secondary={<>{parse(task.description)}</>}
+          secondary={<>{parse(task.description ?? "")}</>}
           className="task-title"
         >
           {task.title}
