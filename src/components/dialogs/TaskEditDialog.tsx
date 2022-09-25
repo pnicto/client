@@ -9,10 +9,10 @@ import {
   IconButton,
 } from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTaskcardContext } from "../../context/taskcardContext";
 import { TaskitemInterface } from "../../interfaces/interfaces";
-
+import { RichTextEditor } from "@mantine/rte";
 interface Props {
   open: boolean;
   handleClose: () => void;
@@ -25,6 +25,7 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   const [currentTaskDescription, setCurrentTaskDescription] =
     useState(description);
   const { tasks, setTasks } = useTaskcardContext();
+  const rteRef = useRef<any>();
 
   const handleSubmit = async () => {
     const url = `${process.env.REACT_APP_API_URL}/tasks/${id}`;
@@ -51,7 +52,7 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleClose} fullScreen>
       <DialogTitle className="edit-task-header">
         <>Edit Task</>
         <IconButton
@@ -84,18 +85,18 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
               setCurrentTaskTitle(event.target.value);
             }}
           />
-          <TextField
-            margin="dense"
-            value={currentTaskDescription ?? ""}
-            fullWidth
-            variant="standard"
-            label="Description"
-            id="description"
-            multiline
-            rows={2}
-            onChange={(event) => {
-              setCurrentTaskDescription(event.target.value);
-            }}
+          <RichTextEditor
+            value={currentTaskDescription}
+            onChange={setCurrentTaskDescription}
+            id="rte"
+            controls={[
+              ["bold", "italic", "underline", "link", "strike"],
+              ["orderedList", "unorderedList"],
+              ["alignLeft", "alignCenter", "alignRight"],
+              ["sub", "sup"],
+              ["blockquote", "code", "codeBlock"],
+            ]}
+            ref={rteRef}
           />
         </DialogContent>
         <DialogActions>
