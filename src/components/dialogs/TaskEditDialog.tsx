@@ -20,6 +20,7 @@ import { TaskitemInterface } from "../../interfaces/interfaces";
 import { RichTextEditor } from "@mantine/rte";
 import BasicDatePicker from "../misc/BasicDatePicker";
 import { Dayjs } from "dayjs";
+import BasicDateTimePicker from "../misc/BasicDateTimePicker";
 interface Props {
   open: boolean;
   handleClose: () => void;
@@ -32,26 +33,68 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   const [currentTaskDescription, setCurrentTaskDescription] =
     useState(description);
   const { tasks, setTasks } = useTaskcardContext();
-  const [date, setDate] = useState<Dayjs | null>(null);
+  const [taskDate, setTaskDate] = useState<Dayjs | null>(null);
   const rteRef = useRef<any>();
-  const [isEvent, setIsEvent] = useState<"true" | "false">("false");
+  const [isEvent, setIsEvent] = useState<"true" | "false" | "">("");
+  const [eventStartDate, setEventStartDate] = useState<Dayjs | null>(null);
+  const [eventEndDate, setEventEndDate] = useState<Dayjs | null>(null);
 
   const handleSubmit = async () => {
     const url = `${process.env.REACT_APP_API_URL}/tasks/${id}`;
-    const patchBody = {
-      taskTitle: currentTaskTitle,
-      description: currentTaskDescription,
-      deadlineDate: date?.add(1, "d").format("YYYY-MM-DDTHH:mm:ssZ"),
-    };
-    await axios.patch(url, patchBody);
-    const updatedTasks = tasks.map((taskItem) => {
-      if (taskItem.id === id) {
-        taskItem.title = currentTaskTitle;
-        taskItem.description = currentTaskDescription;
+    switch (isEvent) {
+      case "true":
+        {
+          const patchBody = {
+            taskTitle: currentTaskTitle,
+            description: currentTaskDescription,
+            eventStartDate,
+            eventEndDate,
+          };
+          await axios.patch(url, patchBody);
+          const updatedTasks = tasks.map((taskItem) => {
+            if (taskItem.id === id) {
+              taskItem.title = currentTaskTitle;
+              taskItem.description = currentTaskDescription;
+            }
+            return taskItem;
+          });
+          setTasks(updatedTasks);
+        }
+        break;
+      case "false":
+        {
+          const patchBody = {
+            taskTitle: currentTaskTitle,
+            description: currentTaskDescription,
+            deadlineDate: taskDate?.add(1, "d").format("YYYY-MM-DDTHH:mm:ssZ"),
+          };
+          await axios.patch(url, patchBody);
+          const updatedTasks = tasks.map((taskItem) => {
+            if (taskItem.id === id) {
+              taskItem.title = currentTaskTitle;
+              taskItem.description = currentTaskDescription;
+            }
+            return taskItem;
+          });
+          setTasks(updatedTasks);
+        }
+        break;
+      case "": {
+        const patchBody = {
+          taskTitle: currentTaskTitle,
+          description: currentTaskDescription,
+        };
+        await axios.patch(url, patchBody);
+        const updatedTasks = tasks.map((taskItem) => {
+          if (taskItem.id === id) {
+            taskItem.title = currentTaskTitle;
+            taskItem.description = currentTaskDescription;
+          }
+          return taskItem;
+        });
+        setTasks(updatedTasks);
       }
-      return taskItem;
-    });
-    setTasks(updatedTasks);
+    }
   };
 
   const deleteTask = async () => {
@@ -62,12 +105,18 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   };
 
   const handleDateChange = (newDate: Dayjs | null) => {
-    setDate(newDate);
+    setTaskDate(newDate);
   };
 
   const handleSelectChange = (event: SelectChangeEvent) => {
-    console.log(event.target.value);
     setIsEvent(event.target.value as "true" | "false");
+  };
+
+  const handleStartDateChange = (newDate: Dayjs | null) => {
+    setEventStartDate(newDate);
+  };
+  const handleEndDateChange = (newDate: Dayjs | null) => {
+    setEventEndDate(newDate);
   };
 
   return (
@@ -104,7 +153,7 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
               setCurrentTaskTitle(event.target.value);
             }}
           />
-          <InputLabel id={"mode-label"}>Mode</InputLabel>
+          <InputLabel id={"mode-label"}>Reminder mode</InputLabel>
           <FormControl>
             <Select
               id="mode-select"
@@ -115,8 +164,9 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
               variant="standard"
               onChange={handleSelectChange}
             >
-              <MenuItem value={"true"}>Task</MenuItem>
-              <MenuItem value={"false"}>Event</MenuItem>
+              <MenuItem value={""}>Mode</MenuItem>
+              <MenuItem value={"false"}>Task</MenuItem>
+              <MenuItem value={"true"}>Event</MenuItem>
             </Select>
           </FormControl>
 
@@ -136,8 +186,26 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
             ref={rteRef}
           />
 
+          {isEvent === "false" && (
+            <BasicDatePicker
+              date={taskDate}
+              handleDateChange={handleDateChange}
+            />
+          )}
+
           {isEvent === "true" && (
-            <BasicDatePicker date={date} handleDateChange={handleDateChange} />
+            <>
+              <BasicDateTimePicker
+                date={eventStartDate}
+                label="Event start"
+                handleDateChange={handleStartDateChange}
+              />
+              <BasicDateTimePicker
+                label="Event end"
+                date={eventEndDate}
+                handleDateChange={handleEndDateChange}
+              />
+            </>
           )}
         </DialogContent>
         <DialogActions>
