@@ -123,6 +123,8 @@ const Register = () => {
     },
     flow: "auth-code",
     onError: (message) => console.log(message),
+    scope:
+      "https://www.googleapis.com/auth/tasks openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
   });
 
   return (
