@@ -13,6 +13,8 @@ import { useRef, useState } from "react";
 import { useTaskcardContext } from "../../context/taskcardContext";
 import { TaskitemInterface } from "../../interfaces/interfaces";
 import { RichTextEditor } from "@mantine/rte";
+import BasicDatePicker from "../misc/BasicDatePicker";
+import { Dayjs } from "dayjs";
 interface Props {
   open: boolean;
   handleClose: () => void;
@@ -25,6 +27,7 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   const [currentTaskDescription, setCurrentTaskDescription] =
     useState(description);
   const { tasks, setTasks } = useTaskcardContext();
+  const [date, setDate] = useState<Dayjs | null>(null);
   const rteRef = useRef<any>();
 
   const handleSubmit = async () => {
@@ -32,6 +35,7 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
     const patchBody = {
       taskTitle: currentTaskTitle,
       description: currentTaskDescription,
+      deadlineDate: date?.add(1, "d").format("YYYY-MM-DDTHH:mm:ssZ"),
     };
     await axios.patch(url, patchBody);
     const updatedTasks = tasks.map((taskItem) => {
@@ -49,6 +53,10 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
     await axios.delete(url);
     const updatedTasks = tasks.filter((taskItem) => task.id !== taskItem.id);
     setTasks(updatedTasks);
+  };
+
+  const handleDateChange = (newDate: Dayjs | null) => {
+    setDate(newDate);
   };
 
   return (
@@ -85,7 +93,9 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
               setCurrentTaskTitle(event.target.value);
             }}
           />
+          <h4>Description</h4>
           <RichTextEditor
+            className="rich-text-editor"
             value={currentTaskDescription}
             onChange={setCurrentTaskDescription}
             id="rte"
@@ -98,6 +108,7 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
             ]}
             ref={rteRef}
           />
+          <BasicDatePicker date={date} handleDateChange={handleDateChange} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="error">
