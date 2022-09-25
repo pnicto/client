@@ -7,6 +7,11 @@ import {
   DialogActions,
   Button,
   IconButton,
+  Select,
+  MenuItem,
+  InputLabel,
+  SelectChangeEvent,
+  FormControl,
 } from "@mui/material";
 import axios from "axios";
 import { useRef, useState } from "react";
@@ -27,15 +32,16 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   const [currentTaskDescription, setCurrentTaskDescription] =
     useState(description);
   const { tasks, setTasks } = useTaskcardContext();
-  const [date, setDate] = useState<Dayjs | null>(null);
+  const [taskDate, setTaskDate] = useState<Dayjs | null>(null);
   const rteRef = useRef<any>();
+  const [isEvent, setIsEvent] = useState<"true" | "false">("false");
 
   const handleSubmit = async () => {
     const url = `${process.env.REACT_APP_API_URL}/tasks/${id}`;
     const patchBody = {
       taskTitle: currentTaskTitle,
       description: currentTaskDescription,
-      deadlineDate: date?.add(1, "d").format("YYYY-MM-DDTHH:mm:ssZ"),
+      deadlineDate: taskDate?.add(1, "d").format("YYYY-MM-DDTHH:mm:ssZ"),
     };
     await axios.patch(url, patchBody);
     const updatedTasks = tasks.map((taskItem) => {
@@ -56,7 +62,12 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   };
 
   const handleDateChange = (newDate: Dayjs | null) => {
-    setDate(newDate);
+    setTaskDate(newDate);
+  };
+
+  const handleSelectChange = (event: SelectChangeEvent) => {
+    console.log(event.target.value);
+    setIsEvent(event.target.value as "true" | "false");
   };
 
   return (
@@ -93,6 +104,22 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
               setCurrentTaskTitle(event.target.value);
             }}
           />
+          <InputLabel id={"mode-label"}>Mode</InputLabel>
+          <FormControl>
+            <Select
+              id="mode-select"
+              labelId="mode-label"
+              label="Mode"
+              value={isEvent}
+              autoWidth
+              variant="standard"
+              onChange={handleSelectChange}
+            >
+              <MenuItem value={"true"}>Task</MenuItem>
+              <MenuItem value={"false"}>Event</MenuItem>
+            </Select>
+          </FormControl>
+
           <h4>Description</h4>
           <RichTextEditor
             className="rich-text-editor"
@@ -108,7 +135,10 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
             ]}
             ref={rteRef}
           />
-          <BasicDatePicker date={date} handleDateChange={handleDateChange} />
+
+          {isEvent === "true" && (
+            <BasicDatePicker date={taskDate} handleDateChange={handleDateChange} />
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="error">
