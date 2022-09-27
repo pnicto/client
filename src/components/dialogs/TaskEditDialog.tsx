@@ -22,6 +22,9 @@ import BasicDatePicker from "../misc/BasicDatePicker";
 import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import BasicDateTimePicker from "../misc/BasicDateTimePicker";
+
+axios.defaults.withCredentials = true;
+
 interface Props {
   open: boolean;
   handleClose: () => void;
@@ -48,12 +51,17 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
 
   const handleSubmit = async () => {
     const url = `${process.env.REACT_APP_API_URL}/tasks/${id}`;
+    let newDescription = rteRef.current.value;
+    if (newDescription === "<p><br></p>") {
+      newDescription = "";
+    }
+
     switch (isEvent) {
       case "true":
         {
           const patchBody = {
             taskTitle: currentTaskTitle,
-            description: currentTaskDescription,
+            description: newDescription,
             eventStartDate,
             eventEndDate,
           };
@@ -61,7 +69,7 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
           const updatedTasks = tasks.map((taskItem) => {
             if (taskItem.id === id) {
               taskItem.title = currentTaskTitle;
-              taskItem.description = currentTaskDescription;
+              taskItem.description = newDescription;
             }
             return taskItem;
           });
@@ -72,14 +80,14 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
         {
           const patchBody = {
             taskTitle: currentTaskTitle,
-            description: currentTaskDescription,
+            description: newDescription,
             deadlineDate: taskDate?.add(1, "d").format("YYYY-MM-DDTHH:mm:ssZ"),
           };
           await axios.patch(url, patchBody);
           const updatedTasks = tasks.map((taskItem) => {
             if (taskItem.id === id) {
               taskItem.title = currentTaskTitle;
-              taskItem.description = currentTaskDescription;
+              taskItem.description = newDescription;
             }
             return taskItem;
           });
@@ -89,13 +97,13 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
       case "": {
         const patchBody = {
           taskTitle: currentTaskTitle,
-          description: currentTaskDescription,
+          description: newDescription,
         };
         await axios.patch(url, patchBody);
         const updatedTasks = tasks.map((taskItem) => {
           if (taskItem.id === id) {
             taskItem.title = currentTaskTitle;
-            taskItem.description = currentTaskDescription;
+            taskItem.description = newDescription;
           }
           return taskItem;
         });
