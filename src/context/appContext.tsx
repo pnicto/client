@@ -14,7 +14,10 @@ type Props = {
 
 export const AppProvider = ({ children }: Props) => {
   // Initial state with light theme and isLoading true
-  const token = sessionStorage.getItem("token");
+  let token = sessionStorage.getItem("token");
+  const { hasUsedGoogleOauth } = JSON.parse(
+    sessionStorage.getItem("user") ?? true.toString()
+  );
 
   const [state, dispatch] = useReducer(reducer, {
     isLoggedIn: token !== null ? true : false,
@@ -25,6 +28,7 @@ export const AppProvider = ({ children }: Props) => {
       message: "Generic message",
       severity: "info",
     },
+    hasUsedGoogleOauth: hasUsedGoogleOauth ? true : false,
   } as globalStateInterface);
 
   // Function which adds either taskcard or taskboard

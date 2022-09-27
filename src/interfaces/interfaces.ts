@@ -1,5 +1,6 @@
 import { AlertColor } from "@mui/material";
 import { ACTIONS } from "../context/reducer";
+
 export interface TaskboardInterface {
   id: number;
   boardTitle: string;
@@ -25,6 +26,7 @@ export interface globalStateInterface {
   currentTaskcards: TaskcardInterface[];
   snackbarState: snackbarStateInterface;
   isShared?: boolean;
+  hasUsedGoogleOauth?: boolean;
 }
 
 export interface globalContextInterface {
