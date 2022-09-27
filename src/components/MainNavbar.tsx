@@ -122,8 +122,7 @@ const MainNavbar = () => {
       globalDispatch({
         type: "update snackbar",
         payload: {
-          isOpen: true,
-          message: "Successfully logged out!!",
+          message: "Successfully logged out!",
           severity: "info",
         },
       });
