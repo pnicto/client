@@ -62,9 +62,8 @@ export type ACTIONS =
   | {
       type: "login user";
       payload: {
-        email: string;
-        id: number;
-        username: string;
+        user: { email: string; id: number; username: string };
+        hasUsedGoogleOauth?: boolean;
       };
     }
   | {
@@ -75,7 +74,6 @@ export type ACTIONS =
       payload: {
         severity: AlertColor;
         message: string;
-        isOpen: boolean;
       };
     }
   | {
@@ -201,6 +199,8 @@ export const reducer = (
       sessionStorage.setItem("user", JSON.stringify(action.payload));
       return {
         ...state,
+        hasUsedGoogleOauth: action.payload.hasUsedGoogleOauth ?? false,
+        isLoggedIn: true,
       };
 
     case "close snackbar":
@@ -213,12 +213,12 @@ export const reducer = (
       };
 
     case "update snackbar":
-      const { isOpen, message, severity } = action.payload;
+      const { message, severity } = action.payload;
       return {
         ...state,
         snackbarState: {
           ...state.snackbarState,
-          isOpen,
+          isOpen: true,
           message,
           severity,
         },
@@ -231,9 +231,10 @@ export const reducer = (
       };
 
     case "logout user":
-      sessionStorage.removeItem("token");
+      sessionStorage.clear();
       return {
         ...state,
+        isLoggedIn: false,
       };
 
     case "change shared board state":
