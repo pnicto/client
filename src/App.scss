@@ -52,11 +52,12 @@ body {
 
 // Landing Page
 #landing-page {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  height: 100vh;
+  height: 100%;
   background-color: $white;
 
   #tasks-svg {
@@ -83,7 +84,8 @@ body {
 
 // Register Page
 #register {
-  height: 100vh;
+  min-height: 100vh;
+  height: 100%;
   text-align: center;
   background-color: $white;
   display: flex;
@@ -100,7 +102,7 @@ body {
       margin: 10px;
     }
   }
-  #login-btn {
+  .login-btn {
     width: 100%;
     text-transform: capitalize;
     font-size: 16px;
@@ -238,4 +240,10 @@ body {
 
 .rich-text-editor {
   margin-bottom: 16px;
+}
+
+.pickers-div {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
