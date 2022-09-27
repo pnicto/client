@@ -15,9 +15,12 @@ const Register = () => {
   const emailRef = useRef<HTMLInputElement>();
   const passwordRef = useRef<HTMLInputElement>();
   const usernameRef = useRef<HTMLInputElement>();
-  const { globalDispatch } = useGlobalContext();
+  const { globalDispatch, globalState } = useGlobalContext();
 
   const navigate = useNavigate();
+  if (globalState.isLoggedIn) {
+    navigate("/app");
+  }
 
   const handleFormSubmit = async () => {
     setIsLoading(true);
@@ -29,7 +32,6 @@ const Register = () => {
       globalDispatch({
         type: "update snackbar",
         payload: {
-          isOpen: true,
           message: "Please provide the required details",
           severity: "error",
         },
@@ -50,7 +52,6 @@ const Register = () => {
       globalDispatch({
         type: "update snackbar",
         payload: {
-          isOpen: true,
           message: "Please provide the required details",
           severity: "error",
         },
@@ -65,7 +66,9 @@ const Register = () => {
       navigate("/app");
       globalDispatch({
         type: "login user",
-        payload: user as { email: string; id: number; username: string },
+        payload: { user } as {
+          user: { email: string; id: number; username: string };
+        },
       });
       globalDispatch({
         type: "set session token",
@@ -74,7 +77,6 @@ const Register = () => {
       globalDispatch({
         type: "update snackbar",
         payload: {
-          isOpen: true,
           message: "Login successful",
           severity: "success",
         },
@@ -89,7 +91,6 @@ const Register = () => {
       globalDispatch({
         type: "update snackbar",
         payload: {
-          isOpen: true,
           severity: "success",
           message: "Registration successful. Please login to continue",
         },
@@ -105,12 +106,11 @@ const Register = () => {
       });
       globalDispatch({
         type: "login user",
-        payload: postResponse.data.user,
+        payload: { user: postResponse.data.user, hasUsedGoogleOauth: true },
       });
       globalDispatch({
         type: "update snackbar",
         payload: {
-          isOpen: true,
           message: "Login successful",
           severity: "success",
         },
@@ -122,7 +122,17 @@ const Register = () => {
       navigate("/app");
     },
     flow: "auth-code",
-    onError: (message) => console.log(message),
+    onError: (message) => {
+      if (message) {
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            severity: "error",
+            message: "Give access to login",
+          },
+        });
+      }
+    },
     scope:
       "https://www.googleapis.com/auth/tasks https://www.googleapis.com/auth/calendar.events openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
   });
@@ -180,7 +190,7 @@ const Register = () => {
               <Button
                 onClick={() => login()}
                 variant="contained"
-                id="login-btn"
+                className="login-btn"
               >
                 <Google />
                 Sign in with google
@@ -188,7 +198,7 @@ const Register = () => {
               <Button
                 href={`https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&scope=user`}
                 variant="contained"
-                id="login-btn"
+                className="login-btn"
               >
                 <GitHub />
                 Sign in with github
