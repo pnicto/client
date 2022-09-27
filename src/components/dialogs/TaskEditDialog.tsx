@@ -1,4 +1,4 @@
-import { Delete } from "@mui/icons-material";
+import { Clear, Delete } from "@mui/icons-material";
 import {
   Dialog,
   DialogTitle,
@@ -22,6 +22,7 @@ import BasicDatePicker from "../misc/BasicDatePicker";
 import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import BasicDateTimePicker from "../misc/BasicDateTimePicker";
+import { useGlobalContext } from "../../context/appContext";
 
 axios.defaults.withCredentials = true;
 
@@ -48,6 +49,8 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   const [eventEndDate, setEventEndDate] = useState<Dayjs | null>(
     dayjs(task.eventEndDate)
   );
+  const { globalDispatch, globalState } = useGlobalContext();
+  const { hasUsedGoogleOauth } = globalState;
 
   const handleSubmit = async () => {
     const url = `${process.env.REACT_APP_API_URL}/tasks/${id}`;
@@ -55,60 +58,71 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
     if (newDescription === "<p><br></p>") {
       newDescription = "";
     }
-
-    switch (isEvent) {
-      case "true":
-        {
-          const patchBody = {
-            taskTitle: currentTaskTitle,
-            description: newDescription,
-            eventStartDate,
-            eventEndDate,
-          };
-          await axios.patch(url, patchBody);
-          const updatedTasks = tasks.map((taskItem) => {
-            if (taskItem.id === id) {
-              taskItem.title = currentTaskTitle;
-              taskItem.description = newDescription;
-            }
-            return taskItem;
-          });
-          setTasks(updatedTasks);
-        }
-        break;
-      case "false":
-        {
-          const patchBody = {
-            taskTitle: currentTaskTitle,
-            description: newDescription,
-            deadlineDate: taskDate?.add(1, "d").format("YYYY-MM-DDTHH:mm:ssZ"),
-          };
-          await axios.patch(url, patchBody);
-          const updatedTasks = tasks.map((taskItem) => {
-            if (taskItem.id === id) {
-              taskItem.title = currentTaskTitle;
-              taskItem.description = newDescription;
-            }
-            return taskItem;
-          });
-          setTasks(updatedTasks);
-        }
-        break;
-      case "": {
-        const patchBody = {
-          taskTitle: currentTaskTitle,
-          description: newDescription,
-        };
-        await axios.patch(url, patchBody);
-        const updatedTasks = tasks.map((taskItem) => {
-          if (taskItem.id === id) {
-            taskItem.title = currentTaskTitle;
-            taskItem.description = newDescription;
+    if (dayjs(eventEndDate)?.isAfter(dayjs(eventStartDate))) {
+      switch (isEvent) {
+        case "true":
+          {
+            const patchBody = {
+              taskTitle: currentTaskTitle,
+              description: newDescription,
+              eventStartDate,
+              eventEndDate,
+            };
+            await axios.patch(url, patchBody);
+            const updatedTasks = tasks.map((taskItem) => {
+              if (taskItem.id === id) {
+                taskItem.title = currentTaskTitle;
+                taskItem.description = newDescription;
+              }
+              return taskItem;
+            });
+            setTasks(updatedTasks);
           }
-          return taskItem;
-        });
-        setTasks(updatedTasks);
+          break;
+        case "false":
+          {
+            const patchBody = {
+              taskTitle: currentTaskTitle,
+              description: newDescription,
+              deadlineDate: taskDate
+                ?.add(1, "d")
+                .format("YYYY-MM-DDTHH:mm:ssZ"),
+            };
+            await axios.patch(url, patchBody);
+            const updatedTasks = tasks.map((taskItem) => {
+              if (taskItem.id === id) {
+                taskItem.title = currentTaskTitle;
+                taskItem.description = newDescription;
+              }
+              return taskItem;
+            });
+            setTasks(updatedTasks);
+          }
+          break;
+        case "": {
+          const patchBody = {
+            taskTitle: currentTaskTitle,
+            description: newDescription,
+          };
+          await axios.patch(url, patchBody);
+          const updatedTasks = tasks.map((taskItem) => {
+            if (taskItem.id === id) {
+              taskItem.title = currentTaskTitle;
+              taskItem.description = newDescription;
+            }
+            return taskItem;
+          });
+          setTasks(updatedTasks);
+        }
       }
+    } else {
+      globalDispatch({
+        type: "update snackbar",
+        payload: {
+          severity: "error",
+          message: "End date cannot be before start date",
+        },
+      });
     }
   };
 
@@ -124,7 +138,18 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   };
 
   const handleSelectChange = (event: SelectChangeEvent) => {
-    setIsEvent(event.target.value as "true" | "false");
+    if (hasUsedGoogleOauth) {
+      setIsEvent(event.target.value as "true" | "false");
+    } else {
+      globalDispatch({
+        type: "update snackbar",
+        payload: {
+          severity: "error",
+          message:
+            "You need to login using google oauth to perform this action.",
+        },
+      });
+    }
   };
 
   const handleStartDateChange = (newDate: Dayjs | null) => {
@@ -150,9 +175,19 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
       </DialogTitle>
       <form
         onSubmit={(event) => {
-          handleClose();
           event.preventDefault();
-          handleSubmit();
+          if (currentTaskTitle) {
+            handleClose();
+            handleSubmit();
+          } else {
+            globalDispatch({
+              type: "update snackbar",
+              payload: {
+                message: "Task title cannot be empty",
+                severity: "error",
+              },
+            });
+          }
         }}
       >
         <DialogContent>
@@ -202,24 +237,45 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
           />
 
           {isEvent === "false" && (
-            <BasicDatePicker
-              date={taskDate}
-              handleDateChange={handleDateChange}
-            />
+            <>
+              <BasicDatePicker
+                date={taskDate}
+                handleDateChange={handleDateChange}
+              />
+              <IconButton
+                color="error"
+                onClick={() => {
+                  setTaskDate(null);
+                }}
+              >
+                <Clear />
+              </IconButton>
+            </>
           )}
 
           {isEvent === "true" && (
             <>
-              <BasicDateTimePicker
-                date={eventStartDate}
-                label="Event start"
-                handleDateChange={handleStartDateChange}
-              />
-              <BasicDateTimePicker
-                label="Event end"
-                date={eventEndDate}
-                handleDateChange={handleEndDateChange}
-              />
+              <div className="pickers-div">
+                <BasicDateTimePicker
+                  date={eventStartDate}
+                  label="Event start"
+                  handleDateChange={handleStartDateChange}
+                />
+                <BasicDateTimePicker
+                  label="Event end"
+                  date={eventEndDate}
+                  handleDateChange={handleEndDateChange}
+                />
+                <IconButton
+                  color="error"
+                  onClick={() => {
+                    setEventStartDate(null);
+                    setEventEndDate(null);
+                  }}
+                >
+                  <Clear />
+                </IconButton>
+              </div>
             </>
           )}
         </DialogContent>
