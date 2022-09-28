@@ -6,6 +6,9 @@ export interface TaskboardInterface {
   boardTitle: string;
   sharedUsers: number[];
   userId?: number;
+  User?: {
+    username: string;
+  };
 }
 
 export interface snackbarStateInterface {
