@@ -53,7 +53,7 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   const { hasUsedGoogleOauth } = globalState;
 
   const handleSubmit = async () => {
-    const url = `${process.env.REACT_APP_API_URL}/tasks/${id}`;
+    const url = `api/tasks/${id}`;
     let newDescription = rteRef.current.value;
     if (newDescription === "<p><br></p>") {
       newDescription = "";
@@ -127,7 +127,7 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   };
 
   const deleteTask = async () => {
-    const url = `${process.env.REACT_APP_API_URL}/tasks/${id}`;
+    const url = `api/tasks/${id}`;
     await axios.delete(url);
     const updatedTasks = tasks.filter((taskItem) => task.id !== taskItem.id);
     setTasks(updatedTasks);

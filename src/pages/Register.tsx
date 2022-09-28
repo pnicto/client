@@ -45,7 +45,7 @@ const Register = () => {
       email,
       password,
     };
-    const url = `${process.env.REACT_APP_BASE_URL}/user/${pageMode}`;
+    const url = `/user/${pageMode}`;
     if (pageMode === "register" && username) {
       postBody = { ...postBody, username };
     } else {
@@ -100,7 +100,7 @@ const Register = () => {
 
   const login = useGoogleLogin({
     onSuccess: async (tokenRes) => {
-      const url = `${process.env.REACT_APP_BASE_URL}/user/login`;
+      const url = `/user/login`;
       const postResponse = await axios.post(url, {
         code: tokenRes.code,
       });

@@ -33,7 +33,7 @@ const Taskitem = ({ task }: Props) => {
   const { globalState } = useGlobalContext();
   const { isShared } = globalState;
   const changeCompletionStatus = async () => {
-    const url = `${process.env.REACT_APP_API_URL}/tasks/${task.id}`;
+    const url = `api/tasks/${task.id}`;
     await axios.patch(url, {
       completed: !isComplete,
     });
