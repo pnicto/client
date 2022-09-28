@@ -66,7 +66,7 @@ const MainNavbar = () => {
 
   const handleRenameTaskboard = async (newBoardTitle: string) => {
     if (newBoardTitle) {
-      const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
+      const url = `api/taskboards/${activeTaskboardId}`;
       await axios.patch(url, {
         taskboardTitle: newBoardTitle,
       });
@@ -80,7 +80,7 @@ const MainNavbar = () => {
   };
 
   const deleteTaskboard = async () => {
-    const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
+    const url = `api/taskboards/${activeTaskboardId}`;
     const deleteResponse = await axios.delete(url);
     const deletedTaskboard = deleteResponse.data;
     globalDispatch({
@@ -105,7 +105,7 @@ const MainNavbar = () => {
   };
 
   const handleClearAll = async () => {
-    const url = `${process.env.REACT_APP_API_URL}/taskcards/clearTaskcards/${activeTaskboardId}`;
+    const url = `api/taskcards/clearTaskcards/${activeTaskboardId}`;
     await axios.delete(url);
     globalDispatch({
       type: "clear all taskcards",
@@ -113,7 +113,7 @@ const MainNavbar = () => {
   };
 
   const handleLogout = async () => {
-    const url = `${process.env.REACT_APP_BASE_URL}/user/logout`;
+    const url = `/user/logout`;
     const getResponse = await axios.get(url);
     if (getResponse.status === 200) {
       globalDispatch({
@@ -131,7 +131,7 @@ const MainNavbar = () => {
   };
 
   const shareBoard = async (emails: string[]) => {
-    const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
+    const url = `api/taskboards/${activeTaskboardId}`;
     if (emails) {
       const postBody = { emails };
       await axios.patch(url, postBody);
@@ -142,7 +142,11 @@ const MainNavbar = () => {
     <nav id="main-navbar">
       <Paper square={true} elevation={3}>
         <div id="board-title">
-          <h3>{activeTasksboard?.boardTitle}</h3>
+          <h3>
+            {!isShared
+              ? activeTasksboard?.boardTitle
+              : `${activeTasksboard?.boardTitle} by ${activeTasksboard?.User?.username}`}
+          </h3>
           {!isShared && (
             <>
               <IconButton
@@ -166,6 +170,7 @@ const MainNavbar = () => {
                     return handleRenameTaskboard(newBoardTitle);
                   }
                 }}
+                sharedUsers={activeTasksboard?.sharedUsers}
               />
             </>
           )}
