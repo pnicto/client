@@ -1,8 +1,9 @@
 import { Menu, MenuItem } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AlertDialog from "../dialogs/AlertDialog";
 import AddDialog from "../dialogs/AddDialog";
 import ShareDialog from "../dialogs/ShareDialog";
+import axios from "axios";
 
 type Props = {
   anchorEl: HTMLElement | null;
@@ -13,6 +14,7 @@ type Props = {
   renameAction: () => Promise<void> | undefined;
   fieldRef: React.MutableRefObject<HTMLInputElement | undefined>;
   shareAction?: (emails: string[]) => Promise<void>;
+  sharedUsers?: number[];
 };
 
 const OptionsMenu = ({
@@ -24,11 +26,31 @@ const OptionsMenu = ({
   renameAction,
   shareAction,
   fieldRef,
+  sharedUsers,
 }: Props) => {
   // Dialog actions
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [userMails, setUserMails] = useState<
+    { email: string; username: string; id: number }[]
+  >([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const getResponse: { email: string; username: string; id: number }[] = (
+        await axios.get(`api/users`)
+      ).data.users;
+
+      const emails = getResponse.filter((item) => {
+        return sharedUsers?.includes(item.id);
+      });
+
+      setUserMails(emails);
+    };
+
+    fetchUsers();
+  }, [sharedUsers]);
 
   const handleClickOpen = () => {
     setIsDialogOpen(true);
@@ -105,6 +127,7 @@ const OptionsMenu = ({
           open={isShareDialogOpen}
           handleClose={handleShareDialogClose}
           handleShare={shareAction}
+          userMails={userMails}
         />,
       ]}
     </Menu>
