@@ -1,7 +1,7 @@
 import { Button, TextField } from "@mui/material";
 import TaskRoundedIcon from "@mui/icons-material/TaskRounded";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../context/appContext";
@@ -18,9 +18,11 @@ const Register = () => {
   const { globalDispatch, globalState } = useGlobalContext();
 
   const navigate = useNavigate();
-  if (globalState.isLoggedIn) {
-    navigate("/app");
-  }
+  useEffect(() => {
+    if (globalState.isLoggedIn) {
+      navigate("/app");
+    }
+  }, [globalState.isLoggedIn, navigate]);
 
   const handleFormSubmit = async () => {
     setIsLoading(true);
@@ -61,7 +63,7 @@ const Register = () => {
 
     const { user } = postResponse.data;
 
-    if (pageMode === "login" && postResponse.status === 200 && user) {
+    if (pageMode === "login" && postResponse.status === 200) {
       setIsLoading(false);
       navigate("/app");
       globalDispatch({
@@ -95,6 +97,10 @@ const Register = () => {
           message: "Registration successful. Please login to continue",
         },
       });
+
+      if (passwordRef.current?.value) {
+        passwordRef.current.value = "";
+      }
     }
   };
 
