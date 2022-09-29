@@ -16,22 +16,23 @@ import parse from "html-react-parser";
 interface Props {
   task: TaskitemInterface;
 }
+
 const Taskitem = ({ task }: Props) => {
-  // Edit dialog state
-  const [open, setOpen] = useState(false);
-
-  // Edit dialog actions
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   const [isComplete, setIsComplete] = useState(task.completed);
   const { globalState } = useGlobalContext();
   const { isShared } = globalState;
+
+  // Edit dialog state
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+  // Edit dialog actions
+  const handleClickOpen = () => {
+    setIsEditDialogOpen(true);
+  };
+  const handleClose = () => {
+    setIsEditDialogOpen(false);
+  };
+
   const changeCompletionStatus = async () => {
     const url = `${process.env.REACT_APP_API_URL}/tasks/${task.id}`;
     await axios.patch(url, {
@@ -40,6 +41,7 @@ const Taskitem = ({ task }: Props) => {
     setIsComplete(!isComplete);
   };
 
+  // If shared make it view only
   return !isShared ? (
     <ListItem
       disablePadding={true}
@@ -50,8 +52,14 @@ const Taskitem = ({ task }: Props) => {
         </IconButton>
       }
     >
-      {/* Custom edit menu */}
-      <TaskEditMenu open={open} handleClose={handleClose} task={task} />
+      {
+        // Custom edit menu
+        <TaskEditMenu
+          open={isEditDialogOpen}
+          handleClose={handleClose}
+          task={task}
+        />
+      }
       <ListItemButton
         disableGutters={true}
         onClick={() => changeCompletionStatus()}

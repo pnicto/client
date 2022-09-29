@@ -10,15 +10,20 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { Google, GitHub } from "@mui/icons-material";
 
 const Register = () => {
+  // Loading state for the button
   const [isLoading, setIsLoading] = useState(false);
   const pageMode: "login" | "register" = useLocation().state ?? "login";
+  const { globalDispatch, globalState } = useGlobalContext();
+
+  // Refs
   const emailRef = useRef<HTMLInputElement>();
   const passwordRef = useRef<HTMLInputElement>();
   const usernameRef = useRef<HTMLInputElement>();
-  const { globalDispatch, globalState } = useGlobalContext();
 
   const navigate = useNavigate();
+
   useEffect(() => {
+    // If logged in forcefully routes the user back to app
     if (globalState.isLoggedIn) {
       navigate("/app");
     }
@@ -26,6 +31,7 @@ const Register = () => {
 
   const handleFormSubmit = async () => {
     setIsLoading(true);
+
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
     const username = usernameRef.current?.value;
@@ -39,6 +45,7 @@ const Register = () => {
         },
       });
     }
+
     let postBody: {
       email: string | undefined;
       password?: string;
@@ -47,7 +54,10 @@ const Register = () => {
       email,
       password,
     };
+
     const url = `${process.env.REACT_APP_BASE_URL}/user/${pageMode}`;
+
+    // Update post body according to the pageMode and do basic validation for null fields
     if (pageMode === "register" && username) {
       postBody = { ...postBody, username };
     } else {
@@ -65,6 +75,7 @@ const Register = () => {
 
     if (pageMode === "login" && postResponse.status === 200) {
       setIsLoading(false);
+      // If login is successful, navigate to app
       navigate("/app");
       globalDispatch({
         type: "login user",
@@ -87,6 +98,7 @@ const Register = () => {
 
     if (pageMode === "register" && postResponse.status === 201) {
       setIsLoading(false);
+      // If registration is successful, navigate to form/login
       navigate("/form", {
         state: "login",
       });
@@ -104,6 +116,7 @@ const Register = () => {
     }
   };
 
+  // Login func for react-oauth pkg
   const login = useGoogleLogin({
     onSuccess: async (tokenRes) => {
       const url = `${process.env.REACT_APP_BASE_URL}/user/login`;
@@ -125,7 +138,7 @@ const Register = () => {
         type: "set session token",
         payload: postResponse.data.accessToken,
       });
-      navigate("/app");
+      if (postResponse.status === 200) navigate("/app");
     },
     flow: "auth-code",
     onError: (message) => {
@@ -176,43 +189,50 @@ const Register = () => {
             size="small"
             className="login-field"
           />
-          {/* Render username field if the page mode is register */}
-          {pageMode === "register" && (
-            <TextField
-              inputRef={usernameRef}
-              variant="outlined"
-              label="Username"
-              fullWidth
-              size="small"
-              className="login-field"
-            />
-          )}
+
+          {
+            // Render username field if the page mode is register
+            pageMode === "register" && (
+              <TextField
+                inputRef={usernameRef}
+                variant="outlined"
+                label="Username"
+                fullWidth
+                size="small"
+                className="login-field"
+              />
+            )
+          }
           <LoadingButton type="submit" variant="contained" loading={isLoading}>
             {pageMode ?? "Login"}
           </LoadingButton>
-          {pageMode === "login" && (
-            <>
-              <p>Or</p>
-              <div id="btn-group">
-                <Button
-                  onClick={() => login()}
-                  variant="contained"
-                  className="login-btn"
-                >
-                  <Google />
-                  Sign in with google
-                </Button>
-                <Button
-                  href={`https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&scope=user`}
-                  variant="contained"
-                  className="login-btn"
-                >
-                  <GitHub />
-                  Sign in with github
-                </Button>
-              </div>
-            </>
-          )}
+
+          {
+            // Renders the oauth buttons if page mode is login
+            pageMode === "login" && (
+              <>
+                <p>Or</p>
+                <div id="btn-group">
+                  <Button
+                    onClick={() => login()}
+                    variant="contained"
+                    className="login-btn"
+                  >
+                    <Google />
+                    Sign in with google
+                  </Button>
+                  <Button
+                    href={`https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&scope=user`}
+                    variant="contained"
+                    className="login-btn"
+                  >
+                    <GitHub />
+                    Sign in with github
+                  </Button>
+                </div>
+              </>
+            )
+          }
         </form>
       </div>
       <AlertSnackbar />

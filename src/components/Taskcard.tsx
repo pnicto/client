@@ -17,6 +17,7 @@ const Taskcard = ({ taskcard }: Props) => {
   const [tasks, setTasks] = useState<TaskitemInterface[]>([]);
   const { globalDispatch, globalState } = useGlobalContext();
   const { isShared } = globalState;
+
   const deleteTaskcard = async (taskcardId: number) => {
     const url = `${process.env.REACT_APP_API_URL}/taskcards/${taskcardId}`;
     await axios.delete(url);
@@ -24,15 +25,6 @@ const Taskcard = ({ taskcard }: Props) => {
       type: "delete taskcard",
       payload: taskcardId,
     });
-  };
-
-  const fetchAllTasks = async () => {
-    const url = `${process.env.REACT_APP_API_URL}/tasks/${taskcard.id}`;
-    const getResponse = await axios.get(url);
-    const responseData: TaskitemInterface[] = getResponse.data;
-    if (getResponse.status === 200) {
-      setTasks(responseData);
-    }
   };
 
   const handleAddTask = async () => {
@@ -45,9 +37,9 @@ const Taskcard = ({ taskcard }: Props) => {
       const postResponse = await axios.post(url, postBody);
       const newTask = postResponse.data;
       setTasks([...tasks, newTask]);
-      setOpen(false);
+      setIsAddDialogOpen(false);
     } else {
-      setOpen(true);
+      setIsAddDialogOpen(true);
     }
   };
 
@@ -61,12 +53,11 @@ const Taskcard = ({ taskcard }: Props) => {
         type: "update taskcard",
         payload: { newListTitle, taskcardId: taskcard.id },
       });
-    } else {
-      console.log(newListTitle);
     }
   };
 
   // Menu actions
+  // https://mui.com/material-ui/react-menu/
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
   const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -81,56 +72,76 @@ const Taskcard = ({ taskcard }: Props) => {
   const taskcardRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
+    const fetchAllTasks = async () => {
+      const url = `${process.env.REACT_APP_API_URL}/tasks/${taskcard.id}`;
+      const getResponse = await axios.get(url);
+      const responseData: TaskitemInterface[] = getResponse.data;
+      if (getResponse.status === 200) {
+        setTasks(responseData);
+      }
+    };
     fetchAllTasks();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [taskcard.id]);
 
   // Dialog actions
-  const [open, setOpen] = useState(false);
-  const handleClickOpen = () => {
-    setOpen(true);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const handleDialogOpen = () => {
+    setIsAddDialogOpen(true);
   };
-  const handleClose = () => {
-    setOpen(false);
+  const handleDialogClose = () => {
+    setIsAddDialogOpen(false);
   };
 
   return (
     <Card className="taskcard" elevation={3}>
       <div className="card-header">
         <h4 className="card-title">{taskcard.cardTitle}</h4>
-        {!isShared && (
-          <div className="card-buttons">
-            <IconButton onClick={handleClickOpen}>
-              <AddCircle color="primary" />
-            </IconButton>
-            <AddDialog
-              dialogLabel="Add a task"
-              dialogTitle="Task"
-              fieldRef={taskRef}
-              handleClose={handleClose}
-              handleSubmit={handleAddTask}
-              open={open}
-            />
-            <IconButton aria-label="more card actions" onClick={openMenu}>
-              <MoreVert />
-            </IconButton>
-            <OptionsMenu
-              anchorEl={anchorEl}
-              closeMenu={closeMenu}
-              open={isMenuOpen}
-              component="list"
-              fieldRef={taskcardRef}
-              deleteAction={() => deleteTaskcard(taskcard.id)}
-              renameAction={() => {
-                const newListTitle = taskcardRef.current?.value;
-                if (newListTitle) {
-                  return handleRenameList(newListTitle);
-                }
-              }}
-            />
-          </div>
-        )}
+        {
+          // If shared make it view only
+          !isShared && (
+            <div className="card-buttons">
+              <IconButton onClick={handleDialogOpen}>
+                <AddCircle color="primary" />
+              </IconButton>
+
+              {/* Visit add dialog file for info */}
+              <AddDialog
+                dialogLabel="Add a task"
+                dialogTitle="Task"
+                fieldRef={taskRef}
+                handleClose={handleDialogClose}
+                handleSubmit={handleAddTask}
+                open={isAddDialogOpen}
+              />
+
+              {/* Icon button for more options */}
+              <IconButton aria-label="more card actions" onClick={openMenu}>
+                <MoreVert />
+              </IconButton>
+
+              {/* Visit options menu for info */}
+              <OptionsMenu
+                anchorEl={anchorEl}
+                closeMenu={closeMenu}
+                open={isMenuOpen}
+                component="list"
+                fieldRef={taskcardRef}
+                deleteAction={() => {
+                  deleteTaskcard(taskcard.id);
+                }}
+                renameAction={() => {
+                  const newListTitle = taskcardRef.current?.value;
+                  if (newListTitle) {
+                    handleRenameList(newListTitle);
+                  }
+                }}
+              />
+            </div>
+          )
+        }
       </div>
+
+      {/* Provider for List to manipulate the tasks as required*/}
       <TaskcardProvider tasks={tasks} setTasks={setTasks}>
         <List>
           {tasks.map((task) => {

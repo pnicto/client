@@ -9,6 +9,7 @@ type Props = {
   tasks: TaskitemInterface[];
   setTasks: React.Dispatch<React.SetStateAction<TaskitemInterface[]>>;
 };
+
 const taskcardContext = React.createContext({});
 
 const TaskcardProvider = ({ children, tasks, setTasks }: Props) => {

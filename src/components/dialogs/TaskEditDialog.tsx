@@ -34,14 +34,15 @@ interface Props {
 
 const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   const { title, id, description } = task;
+
+  // State values for title, description, dates and reminder mode
   const [currentTaskTitle, setCurrentTaskTitle] = useState(title);
   const [currentTaskDescription, setCurrentTaskDescription] =
     useState(description);
-  const { tasks, setTasks } = useTaskcardContext();
   const [taskDate, setTaskDate] = useState<Dayjs | null>(
     dayjs(task.deadlineDate)
   );
-  const rteRef = useRef<any>();
+  // isEvent true for google calendar events, false for google tasks, "" for neither of them
   const [isEvent, setIsEvent] = useState<"true" | "false" | "">("");
   const [eventStartDate, setEventStartDate] = useState<Dayjs | null>(
     dayjs(task.eventStartDate)
@@ -49,16 +50,26 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   const [eventEndDate, setEventEndDate] = useState<Dayjs | null>(
     dayjs(task.eventEndDate)
   );
+
+  // tasks from provider
+  const { tasks, setTasks } = useTaskcardContext();
+
+  // Ref for rte
+  const rteRef = useRef<any>();
+
   const { globalDispatch, globalState } = useGlobalContext();
   const { hasUsedGoogleOauth } = globalState;
 
   const handleSubmit = async () => {
     const url = `${process.env.REACT_APP_API_URL}/tasks/${id}`;
     let newDescription = rteRef.current.value;
+
+    // Mantine rte gives the following html instead of "" when empty, so I change it to "" for storing it in db
     if (newDescription === "<p><br></p>") {
       newDescription = "";
     }
     switch (isEvent) {
+      // If isEvent true then verify the dates and make request
       case "true":
         if (dayjs(eventEndDate)?.isAfter(dayjs(eventStartDate))) {
           const patchBody = {
@@ -85,8 +96,10 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
             },
           });
         }
-
         break;
+
+      // If tasks reminder
+      // TODO: Verify the date offset
       case "false":
         {
           const patchBody = {
@@ -105,6 +118,8 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
           setTasks(updatedTasks);
         }
         break;
+
+      // A normal taskboard task
       case "": {
         const patchBody = {
           taskTitle: currentTaskTitle,
@@ -134,10 +149,12 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
     setTaskDate(newDate);
   };
 
+  // Handle change for reminder mode
   const handleSelectChange = (event: SelectChangeEvent) => {
     if (hasUsedGoogleOauth) {
       setIsEvent(event.target.value as "true" | "false");
     } else {
+      // Event mode only available if logged in with google oauth
       globalDispatch({
         type: "update snackbar",
         payload: {
@@ -157,9 +174,11 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   };
 
   return (
+    // Full screen dialog
     <Dialog open={open} onClose={handleClose} fullScreen>
       <DialogTitle className="edit-task-header">
         <>Edit Task</>
+        {/* Icon button to delete task */}
         <IconButton
           onClick={() => {
             handleClose();
@@ -170,6 +189,7 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
           <Delete />
         </IconButton>
       </DialogTitle>
+      {/* Form which stays open if task title is empty */}
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -232,6 +252,8 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
             ]}
             ref={rteRef}
           />
+
+          {/* Show date/datetime pickers according to the event mode*/}
 
           {isEvent === "false" && (
             <>

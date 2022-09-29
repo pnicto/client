@@ -9,7 +9,10 @@ const GithubOauthWaitPage = () => {
   const { globalDispatch } = useGlobalContext();
 
   useEffect(() => {
+    // Get the code github gives you on the callback url
     const code = document.URL.split("code=")?.[1];
+
+    // Function to make request to server with the code
     const githubOauth = async () => {
       const postResponse = await axios.post(
         `${process.env.REACT_APP_BASE_URL}/github/auth`,
@@ -24,7 +27,7 @@ const GithubOauthWaitPage = () => {
             user: postResponse.data,
           },
         });
-
+        navigate("/app");
         globalDispatch({
           type: "update snackbar",
           payload: {
@@ -32,18 +35,15 @@ const GithubOauthWaitPage = () => {
             severity: "success",
           },
         });
-
-        navigate("/app");
       }
     };
 
     if (code) {
       githubOauth();
-    } else {
-      console.log("kys");
     }
   }, [globalDispatch, navigate]);
 
+  // In the meanwhile show the loading indicator
   return (
     <div id="loading-indicator">
       <CircularProgress color="info" />

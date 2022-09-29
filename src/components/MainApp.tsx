@@ -15,7 +15,10 @@ axios.defaults.withCredentials = true;
 const MainApp = () => {
   const { globalState, globalDispatch } = useGlobalContext();
   const { isLoading, isLoggedIn, themeMode } = globalState;
+
   const navigate = useNavigate();
+
+  // Create theme from MUI docs
   const theme = createTheme({
     palette: {
       mode: themeMode,
@@ -54,6 +57,7 @@ const MainApp = () => {
       borderRadius: 8,
     },
   });
+
   useEffect(() => {
     const fetchAllTasksboards = async () => {
       const url = `${process.env.REACT_APP_API_URL}/taskboards`;

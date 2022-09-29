@@ -275,6 +275,7 @@ export const reducer = (
           userTaskboards: updatedTasksboards,
         },
       };
+
     default:
       throw new Error("Reducer error");
   }

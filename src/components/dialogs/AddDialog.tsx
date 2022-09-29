@@ -18,12 +18,12 @@ interface Props {
 }
 
 const AddDialog = ({
-  open,
-  handleClose,
-  fieldRef,
+  open, // Dialog state
+  handleClose, // Func to handle close
+  fieldRef, // Ref for the dialog name
   handleSubmit,
-  dialogTitle,
-  dialogLabel,
+  dialogTitle, // Dialog title
+  dialogLabel, // Dialog name
 }: Props) => {
   return (
     <Dialog open={open} onClose={handleClose}>
@@ -49,7 +49,7 @@ const AddDialog = ({
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button variant="contained" type="submit">
-            Add
+            Add/Rename
           </Button>
         </DialogActions>
       </form>

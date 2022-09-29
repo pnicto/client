@@ -3,6 +3,7 @@ import MuiAlert, { AlertColor } from "@mui/material/Alert";
 import React from "react";
 import { useGlobalContext } from "../../context/appContext";
 
+// Alert snackbar from MUI docs
 const AlertSnackbar = () => {
   const { globalDispatch, globalState } = useGlobalContext();
   const { isOpen, message, severity } = globalState.snackbarState;
@@ -10,7 +11,7 @@ const AlertSnackbar = () => {
   return (
     <Snackbar
       open={isOpen}
-      autoHideDuration={4000}
+      autoHideDuration={3030}
       onClose={(_: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === "clickaway") return;
         globalDispatch({

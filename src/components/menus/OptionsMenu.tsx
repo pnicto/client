@@ -9,49 +9,45 @@ type Props = {
   component: "list" | "board";
   open: boolean;
   closeMenu: () => void;
-  deleteAction: () => Promise<void>;
-  renameAction: () => Promise<void> | undefined;
+  deleteAction: () => void;
+  renameAction: () => void | undefined;
   fieldRef: React.MutableRefObject<HTMLInputElement | undefined>;
   shareAction?: (emails: string[]) => Promise<void>;
   sharedUsers?: number[];
 };
 
 const OptionsMenu = ({
-  anchorEl,
-  component,
-  open,
-  closeMenu,
-  deleteAction,
-  renameAction,
-  shareAction,
-  fieldRef,
-  sharedUsers,
+  anchorEl, // used to set the position of the popover refer MUI docs for more info
+  component, // Since I am using this options menu for both card and board, for labeling I use this string
+  open, // Menu's state
+  closeMenu, // Close menu function
+  deleteAction, // Delete action  for both card and board
+  renameAction, // Rename action for both card and board
+  shareAction, // Share action only available for board
+  fieldRef, // Ref for input field in rename dialog
+  sharedUsers, // Shared users IDs for share dialog
 }: Props) => {
   // Dialog actions
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteAlertDialogOpen, setIsDeleteAlertDialogOpen] = useState(false);
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
+  // TODO:Convert them into a single function
   const handleClickOpen = () => {
-    setIsDialogOpen(true);
+    setIsDeleteAlertDialogOpen(true);
   };
-
   const handleClose = () => {
-    setIsDialogOpen(false);
+    setIsDeleteAlertDialogOpen(false);
   };
-
   const handleRenameDialogOpen = () => {
     setIsRenameDialogOpen(true);
   };
-
   const handleRenameDialogClose = () => {
     setIsRenameDialogOpen(false);
   };
-
   const handleShareDialogOpen = () => {
     setIsShareDialogOpen(true);
   };
-
   const handleShareDialogClose = () => {
     setIsShareDialogOpen(false);
   };
@@ -80,6 +76,7 @@ const OptionsMenu = ({
           renameAction();
         }}
       />
+
       <MenuItem
         onClick={() => {
           handleClickOpen();
@@ -89,10 +86,12 @@ const OptionsMenu = ({
       </MenuItem>
       <AlertDialog
         dialogTitle="Are you sure?"
-        open={isDialogOpen}
+        open={isDeleteAlertDialogOpen}
         handleClose={handleClose}
         handleAlert={deleteAction}
       />
+
+      {/* Added keys as 1 and 2 because it's not that they are gonna refer anything unlike a populated list */}
       {component === "board" && [
         <MenuItem
           key={1}

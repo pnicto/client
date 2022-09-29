@@ -17,14 +17,17 @@ interface Props {
 }
 
 const ShareDialog = ({
-  open,
-  handleClose,
-  handleShare,
-  sharedUsers,
+  open, // State of dialog
+  handleClose, // Func to handle dialog state
+  handleShare, // Func to handle submit
+  sharedUsers, // Shared users id from db
 }: Props) => {
+  // List of emails
   const [userMails, setUserMails] = useState<string[]>([]);
 
   useEffect(() => {
+    // TODO:Find alternative ways if possible
+    // Fetches all users and filters the users if they are the shared users and gets their emails for the purpose of displaying who the owner is sharing them with
     const fetchUsers = async () => {
       const getResponse: { email: string; username: string; id: number }[] = (
         await axios.get(`${process.env.REACT_APP_API_URL}/users`)
@@ -46,6 +49,7 @@ const ShareDialog = ({
     fetchUsers();
   }, [sharedUsers]);
 
+  // Refs
   const emailsRef = useRef<HTMLInputElement>();
 
   const handleSubmit = () => {
@@ -58,7 +62,8 @@ const ShareDialog = ({
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Share this board with</DialogTitle>
       <DialogContent>
-        <p>Enter emails as comma separated values</p>
+        <p>Enter emails as comma separated values.</p>
+        <p>Make it empty to remove access</p>
         <form
           onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();

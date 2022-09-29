@@ -1,4 +1,3 @@
-/* eslint-disable array-callback-return */
 import { Card, ListItemButton, Paper } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useGlobalContext } from "../context/appContext";
@@ -14,26 +13,26 @@ const Taskboard = () => {
     useGlobalContext();
   const { activeTaskboardId, currentTaskcards, taskboards } = globalState;
   const { userTaskboards, sharedTaskboards } = taskboards;
+
   // Refs
   const taskcardRef = useRef<HTMLInputElement>();
 
   //Dialog actions
-  const [open, setOpen] = useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const handleAddDialogOpen = () => {
+    setIsAddDialogOpen(true);
   };
-
-  const handleClose = () => {
-    setOpen(false);
+  const handleAddDialogClose = () => {
+    setIsAddDialogOpen(false);
   };
 
   useEffect(() => {
-    sharedTaskboards?.find((taskboard) => {
+    // TODO: See if I can optimize or find an alternative way
+    // Change the isShared status if the taskboard is shared. This is for making it view only
+    sharedTaskboards?.forEach((taskboard) => {
       if (taskboard.id === activeTaskboardId) setIsShared(true);
     });
-
-    userTaskboards.find((taskboard) => {
+    userTaskboards.forEach((taskboard) => {
       if (taskboard.id === activeTaskboardId) setIsShared(false);
     });
     globalDispatch({
@@ -42,18 +41,21 @@ const Taskboard = () => {
     });
     const fetchAllTaskscards = async () => {
       let url;
+
+      // Find the active taskboard
       const activeTaskboard = sharedTaskboards?.find(
         (taskboard) => taskboard.id === activeTaskboardId
       );
+
+      // If shared then send the userId of the owner to send the view only cards and tasks
       if (isShared && activeTaskboard?.userId) {
         url = `${process.env.REACT_APP_API_URL}/taskCards/${activeTaskboardId}/${activeTaskboard?.userId}`;
       } else {
         url = `${process.env.REACT_APP_API_URL}/taskCards/${activeTaskboardId}`;
       }
+
       const getResponse = await axios.get(url);
-
       const responseData: TaskcardInterface[] = getResponse.data;
-
       if (getResponse.status === 200) {
         globalDispatch({
           type: "set taskcards",
@@ -71,6 +73,7 @@ const Taskboard = () => {
     userTaskboards,
   ]);
 
+  // If shared then make them view only
   return !isShared ? (
     <Paper square={true}>
       <div id="taskboard">
@@ -78,24 +81,29 @@ const Taskboard = () => {
           return <Taskcard key={taskcard.id} taskcard={taskcard}></Taskcard>;
         })}
         <Card className="taskcard" elevation={3}>
-          <ListItemButton className="add-card-btn" onClick={handleClickOpen}>
+          <ListItemButton
+            className="add-card-btn"
+            onClick={handleAddDialogOpen}
+          >
             <Add color="primary" /> Add new list
           </ListItemButton>
         </Card>
+        {/* Refer the file for info */}
         <AddDialog
           dialogLabel="Create a new list"
           dialogTitle="List name"
           fieldRef={taskcardRef}
-          handleClose={handleClose}
+          handleClose={handleAddDialogClose}
           handleSubmit={() => {
             const taskcardTitle = taskcardRef.current?.value;
             if (taskcardTitle) {
-              return handleAddComponent(taskcardTitle, setOpen, "taskcard");
+              handleAddComponent(taskcardTitle, setIsAddDialogOpen, "taskcard");
+            } else {
+              throw new Error("taskcard addition");
             }
-            throw new Error("taskcard addition");
           }}
-          open={open}
-        />{" "}
+          open={isAddDialogOpen}
+        />
       </div>
     </Paper>
   ) : (

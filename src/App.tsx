@@ -14,6 +14,7 @@ function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/form" element={<Register />} />
       <Route path="/app" element={<MainApp />} />
+      {/* Route where github gives the code for further actions */}
       <Route path="/github/auth" element={<GithubOauthWaitPage />} />
     </Routes>
   );

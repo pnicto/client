@@ -4,7 +4,7 @@ interface Props {
   dialogTitle: string;
   open: boolean;
   handleClose: () => void;
-  handleAlert: () => Promise<void>;
+  handleAlert: () => void;
 }
 const AlertDialog = ({
   open,

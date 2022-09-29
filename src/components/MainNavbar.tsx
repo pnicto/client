@@ -19,10 +19,13 @@ import { errorCodes } from "../interfaces/errors";
 axios.defaults.withCredentials = true;
 
 const MainNavbar = () => {
-  const { globalState, globalDispatch } = useGlobalContext();
   const [isChecked, setIsChecked] = useState(false);
+
+  const { globalState, globalDispatch } = useGlobalContext();
   const { activeTaskboardId, taskboards, isShared } = globalState;
   const { userTaskboards, sharedTaskboards } = taskboards;
+
+  // Find the current active taskboard among the users taskboards or shared taskboards
   const activeTasksboard =
     userTaskboards.find((tasksboard) => tasksboard.id === activeTaskboardId) ??
     sharedTaskboards?.find((taskboard) => taskboard.id === activeTaskboardId);
@@ -33,38 +36,35 @@ const MainNavbar = () => {
   const taskboardRef = useRef<HTMLInputElement>();
 
   // Dialog actions
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const handleClickOpen = () => {
-    setIsDialogOpen(true);
+  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
+  const handleAlertDialogOpen = () => {
+    setIsAlertDialogOpen(true);
   };
-
-  const handleClose = () => {
-    setIsDialogOpen(false);
+  const handleAlertDialogClose = () => {
+    setIsAlertDialogOpen(false);
   };
 
   // Menu actions
+  // https://mui.com/material-ui/react-menu/
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [boardAnchorEl, setBoardAnchorEl] = useState<null | HTMLElement>(null);
   const isBoardMenuOpen = Boolean(boardAnchorEl);
-
   const openBoardMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setBoardAnchorEl(event.currentTarget);
   };
-
   const closeBoardMenu = () => {
     setBoardAnchorEl(null);
   };
 
-  const open = Boolean(anchorEl);
-
-  const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const isSettingsMenuOpen = Boolean(anchorEl);
+  const openSettingsMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
-
-  const closeMenu = () => {
+  const closeSettingsMenu = () => {
     setAnchorEl(null);
   };
 
+  // TODO:Error handling for blank name
   const handleRenameTaskboard = async (newBoardTitle: string) => {
     if (newBoardTitle) {
       const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
@@ -75,8 +75,13 @@ const MainNavbar = () => {
         type: "update taskboard",
         payload: newBoardTitle,
       });
-    } else {
-      console.log(newBoardTitle);
+      globalDispatch({
+        type: "update snackbar",
+        payload: {
+          message: "Taskboard renamed",
+          severity: "info",
+        },
+      });
     }
   };
 
@@ -84,11 +89,20 @@ const MainNavbar = () => {
     const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
     const deleteResponse = await axios.delete(url);
     const deletedTaskboard = deleteResponse.data;
-    globalDispatch({
-      type: "delete taskboard",
-      payload: deletedTaskboard,
-    });
-    closeBoardMenu();
+    if (deleteResponse.status === 200) {
+      globalDispatch({
+        type: "delete taskboard",
+        payload: deletedTaskboard,
+      });
+      globalDispatch({
+        type: "update snackbar",
+        payload: {
+          message: "Taskboard deleted",
+          severity: "error",
+        },
+      });
+      closeBoardMenu();
+    }
   };
 
   const changeTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,12 +119,22 @@ const MainNavbar = () => {
     }
   };
 
+  // Func for clearing all taskcards
   const handleClearAll = async () => {
     const url = `${process.env.REACT_APP_API_URL}/taskcards/clearTaskcards/${activeTaskboardId}`;
-    await axios.delete(url);
-    globalDispatch({
-      type: "clear all taskcards",
-    });
+    const deleteResponse = await axios.delete(url);
+    if (deleteResponse.status === 200) {
+      globalDispatch({
+        type: "clear all taskcards",
+      });
+      globalDispatch({
+        type: "update snackbar",
+        payload: {
+          message: "Cleared all taskcards",
+          severity: "error",
+        },
+      });
+    }
   };
 
   const handleLogout = async () => {
@@ -177,6 +201,7 @@ const MainNavbar = () => {
     <nav id="main-navbar">
       <Paper square={true} elevation={3}>
         <div id="board-title">
+          {/* If isShared do not show the more options */}
           <h3>
             {!isShared
               ? activeTasksboard?.boardTitle
@@ -191,6 +216,7 @@ const MainNavbar = () => {
                 <MoreVert />
               </IconButton>
 
+              {/* Visit OptionsMenu file for more info */}
               <OptionsMenu
                 anchorEl={boardAnchorEl}
                 open={isBoardMenuOpen}
@@ -202,7 +228,7 @@ const MainNavbar = () => {
                 renameAction={() => {
                   const newBoardTitle = taskboardRef.current?.value;
                   if (newBoardTitle) {
-                    return handleRenameTaskboard(newBoardTitle);
+                    handleRenameTaskboard(newBoardTitle);
                   }
                 }}
                 sharedUsers={activeTasksboard?.sharedUsers}
@@ -211,28 +237,30 @@ const MainNavbar = () => {
           )}
         </div>
         <div id="nav-button-group">
-          {!isShared && (
-            <>
-              <Button variant="contained" onClick={handleClickOpen}>
-                clear current
-              </Button>
-              <AlertDialog
-                dialogTitle="Are you sure?"
-                handleClose={handleClose}
-                open={isDialogOpen}
-                handleAlert={handleClearAll}
-              />
-            </>
-          )}
-          {/* <Button variant="contained">export</Button> */}
-          <IconButton aria-label="more actions" onClick={openMenu}>
+          {
+            // Do not show the clear cards option if it is shared
+            !isShared && (
+              <>
+                <Button variant="contained" onClick={handleAlertDialogOpen}>
+                  clear current
+                </Button>
+                <AlertDialog
+                  dialogTitle="Are you sure?"
+                  handleClose={handleAlertDialogClose}
+                  open={isAlertDialogOpen}
+                  handleAlert={handleClearAll}
+                />
+              </>
+            )
+          }
+          <IconButton aria-label="more actions" onClick={openSettingsMenu}>
             <MoreHoriz />
           </IconButton>
           <Menu
             id="more-settings"
             anchorEl={anchorEl}
-            open={open}
-            onClose={closeMenu}
+            open={isSettingsMenuOpen}
+            onClose={closeSettingsMenu}
             MenuListProps={{
               "aria-labelledby": "basic-button",
             }}
@@ -243,7 +271,7 @@ const MainNavbar = () => {
                 checked={isChecked}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                   changeTheme(event);
-                  closeMenu();
+                  closeSettingsMenu();
                   setIsChecked(!isChecked);
                 }}
               />

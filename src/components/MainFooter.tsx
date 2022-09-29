@@ -9,6 +9,7 @@ const MainFooter = () => {
     useGlobalContext();
   const { taskboards, activeTaskboardId } = globalState;
   const { userTaskboards, sharedTaskboards } = taskboards;
+
   const changeActiveTaskboard = (tasksboardId: number) => {
     globalDispatch({
       type: "change active taskboard",
@@ -20,13 +21,12 @@ const MainFooter = () => {
   const taskboardRef = useRef<HTMLInputElement>();
 
   // Dialog actions
-  const [open, setOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const handleClickOpen = () => {
-    setOpen(true);
+    setIsAddDialogOpen(true);
   };
-
   const handleClose = () => {
-    setOpen(false);
+    setIsAddDialogOpen(false);
   };
 
   return (
@@ -60,6 +60,7 @@ const MainFooter = () => {
           }
         })}
         {sharedTaskboards?.map((taskboard) => {
+          // Scale the button which shows the active tasksboard.
           if (activeTaskboardId === taskboard.id) {
             return (
               <Button
@@ -87,6 +88,7 @@ const MainFooter = () => {
           }
         })}
 
+        {/* Adding new taskboard button */}
         <Button
           onClick={handleClickOpen}
           color="secondary"
@@ -103,11 +105,15 @@ const MainFooter = () => {
           handleSubmit={() => {
             const taskboardTitle = taskboardRef.current?.value;
             if (taskboardTitle) {
-              return handleAddComponent(taskboardTitle, setOpen, "taskboard");
+              return handleAddComponent(
+                taskboardTitle,
+                setIsAddDialogOpen,
+                "taskboard"
+              );
             }
-            throw new Error("taskcard addition");
+            throw new Error("taskboard addition");
           }}
-          open={open}
+          open={isAddDialogOpen}
         />
       </Paper>
     </div>

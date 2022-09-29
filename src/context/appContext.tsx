@@ -5,7 +5,7 @@ import {
   globalStateInterface,
 } from "../interfaces/interfaces";
 import { reducer } from "./reducer";
-axios.defaults.withCredentials = true
+axios.defaults.withCredentials = true;
 const AppContext = React.createContext({});
 
 type Props = {
@@ -13,12 +13,13 @@ type Props = {
 };
 
 export const AppProvider = ({ children }: Props) => {
-  // Initial state with light theme and isLoading true
+  // Token and user data from session storage to figure out session logins
   let token = sessionStorage.getItem("token");
   const { hasUsedGoogleOauth } = JSON.parse(
     sessionStorage.getItem("user") ?? true.toString()
   );
 
+  // Initial state with light theme and isLoading true
   const [state, dispatch] = useReducer(reducer, {
     isLoggedIn: token !== null ? true : false,
     isLoading: true,
