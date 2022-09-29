@@ -10,6 +10,8 @@ import Taskboard from "./Taskboard";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import LoadingIndicator from "./misc/LoadingIndicator";
 
+axios.defaults.withCredentials = true;
+
 const MainApp = () => {
   const { globalState, globalDispatch } = useGlobalContext();
   const { isLoading, isLoggedIn, themeMode } = globalState;

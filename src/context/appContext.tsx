@@ -5,7 +5,7 @@ import {
   globalStateInterface,
 } from "../interfaces/interfaces";
 import { reducer } from "./reducer";
-
+axios.defaults.withCredentials = true
 const AppContext = React.createContext({});
 
 type Props = {
