@@ -14,6 +14,7 @@ import AlertDialog from "./dialogs/AlertDialog";
 import axios from "axios";
 import OptionsMenu from "./menus/OptionsMenu";
 import { useNavigate } from "react-router-dom";
+import { errorCodes } from "../interfaces/errors";
 
 axios.defaults.withCredentials = true;
 
@@ -114,19 +115,31 @@ const MainNavbar = () => {
 
   const handleLogout = async () => {
     const url = `${process.env.REACT_APP_BASE_URL}/user/logout`;
-    const getResponse = await axios.get(url);
-    if (getResponse.status === 200) {
-      globalDispatch({
-        type: "logout user",
-      });
-      globalDispatch({
-        type: "update snackbar",
-        payload: {
-          message: "Successfully logged out!",
-          severity: "info",
-        },
-      });
-      navigate("/");
+    try {
+      const getResponse = await axios.get(url);
+      if (getResponse.status === 200) {
+        globalDispatch({
+          type: "logout user",
+        });
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "Successfully logged out!",
+            severity: "info",
+          },
+        });
+        navigate("/");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.code === errorCodes.networkError) {
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "There's some issue with your network",
+            severity: "error",
+          },
+        });
+      }
     }
   };
 
@@ -134,14 +147,29 @@ const MainNavbar = () => {
     const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
     if (emails) {
       const postBody = { emails };
-      const postResponse = await axios.patch(url, postBody);
-      globalDispatch({
-        type: "update shared users",
-        payload: {
-          activeTaskboard: activeTasksboard,
-          sharedUsers: postResponse.data.sharedUsers,
-        },
-      });
+      try {
+        const postResponse = await axios.patch(url, postBody);
+        globalDispatch({
+          type: "update shared users",
+          payload: {
+            activeTaskboard: activeTasksboard,
+            sharedUsers: postResponse.data.sharedUsers,
+          },
+        });
+      } catch (error) {
+        if (
+          axios.isAxiosError(error) &&
+          error.code === errorCodes.networkError
+        ) {
+          globalDispatch({
+            type: "update snackbar",
+            payload: {
+              message: "There's some issue with your network",
+              severity: "error",
+            },
+          });
+        }
+      }
     }
   };
 
