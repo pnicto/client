@@ -39,7 +39,7 @@ const OptionsMenu = ({
   useEffect(() => {
     const fetchUsers = async () => {
       const getResponse: { email: string; username: string; id: number }[] = (
-        await axios.get(`api/users`)
+        await axios.get(`${process.env.REACT_APP_API_URL}/users`)
       ).data.users;
 
       const emails = getResponse.filter((item) => {

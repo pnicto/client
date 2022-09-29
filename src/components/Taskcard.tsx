@@ -18,7 +18,7 @@ const Taskcard = ({ taskcard }: Props) => {
   const { globalDispatch, globalState } = useGlobalContext();
   const { isShared } = globalState;
   const deleteTaskcard = async (taskcardId: number) => {
-    const url = `api/taskcards/${taskcardId}`;
+    const url = `${process.env.REACT_APP_API_URL}/taskcards/${taskcardId}`;
     await axios.delete(url);
     globalDispatch({
       type: "delete taskcard",
@@ -27,7 +27,7 @@ const Taskcard = ({ taskcard }: Props) => {
   };
 
   const fetchAllTasks = async () => {
-    const url = `api/tasks/${taskcard.id}`;
+    const url = `${process.env.REACT_APP_API_URL}/tasks/${taskcard.id}`;
     const getResponse = await axios.get(url);
     const responseData: TaskitemInterface[] = getResponse.data;
     if (getResponse.status === 200) {
@@ -41,7 +41,7 @@ const Taskcard = ({ taskcard }: Props) => {
       const postBody = {
         taskTitle: taskToBeAdded,
       };
-      const url = `api/tasks/${taskcard.id}`;
+      const url = `${process.env.REACT_APP_API_URL}/tasks/${taskcard.id}`;
       const postResponse = await axios.post(url, postBody);
       const newTask = postResponse.data;
       setTasks([...tasks, newTask]);
@@ -53,7 +53,7 @@ const Taskcard = ({ taskcard }: Props) => {
 
   const handleRenameList = async (newListTitle: string) => {
     if (newListTitle) {
-      const url = `api/taskcards/${taskcard.id}`;
+      const url = `${process.env.REACT_APP_API_URL}/taskcards/${taskcard.id}`;
       await axios.patch(url, {
         cardTitle: newListTitle,
       });

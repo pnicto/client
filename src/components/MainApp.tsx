@@ -54,7 +54,7 @@ const MainApp = () => {
   });
   useEffect(() => {
     const fetchAllTasksboards = async () => {
-      const url = `api/taskboards`;
+      const url = `${process.env.REACT_APP_API_URL}/taskboards`;
       const getResponse = await axios.get(url);
       const responseData: {
         userTaskboards: TaskboardInterface[];

@@ -46,9 +46,9 @@ const Taskboard = () => {
         const activeTaskboard = sharedTaskboards?.find(
           (taskboard) => taskboard.id === activeTaskboardId
         );
-        url = `api/taskCards/${activeTaskboardId}/${activeTaskboard?.userId}`;
+        url = `${process.env.REACT_APP_API_URL}/taskCards/${activeTaskboardId}/${activeTaskboard?.userId}`;
       } else {
-        url = `api/taskCards/${activeTaskboardId}`;
+        url = `${process.env.REACT_APP_API_URL}/taskCards/${activeTaskboardId}`;
       }
       const getResponse = await axios.get(url);
 

@@ -45,7 +45,7 @@ const Register = () => {
       email,
       password,
     };
-    const url = `/user/${pageMode}`;
+    const url = `${process.env.REACT_APP_BASE_URL}/user/${pageMode}`;
     if (pageMode === "register" && username) {
       postBody = { ...postBody, username };
     } else {
@@ -100,7 +100,7 @@ const Register = () => {
 
   const login = useGoogleLogin({
     onSuccess: async (tokenRes) => {
-      const url = `/user/login`;
+      const url = `${process.env.REACT_APP_BASE_URL}/user/login`;
       const postResponse = await axios.post(url, {
         code: tokenRes.code,
       });
@@ -184,26 +184,28 @@ const Register = () => {
           <LoadingButton type="submit" variant="contained" loading={isLoading}>
             {pageMode ?? "Login"}
           </LoadingButton>
-          <p>Or</p>
           {pageMode === "login" && (
-            <div id="btn-group">
-              <Button
-                onClick={() => login()}
-                variant="contained"
-                className="login-btn"
-              >
-                <Google />
-                Sign in with google
-              </Button>
-              <Button
-                href={`https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&scope=user`}
-                variant="contained"
-                className="login-btn"
-              >
-                <GitHub />
-                Sign in with github
-              </Button>
-            </div>
+            <>
+              <p>Or</p>
+              <div id="btn-group">
+                <Button
+                  onClick={() => login()}
+                  variant="contained"
+                  className="login-btn"
+                >
+                  <Google />
+                  Sign in with google
+                </Button>
+                <Button
+                  href={`https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&scope=user`}
+                  variant="contained"
+                  className="login-btn"
+                >
+                  <GitHub />
+                  Sign in with github
+                </Button>
+              </div>
+            </>
           )}
         </form>
       </div>
