@@ -134,7 +134,14 @@ const MainNavbar = () => {
     const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
     if (emails) {
       const postBody = { emails };
-      await axios.patch(url, postBody);
+      const postResponse = await axios.patch(url, postBody);
+      globalDispatch({
+        type: "update shared users",
+        payload: {
+          activeTaskboard: activeTasksboard,
+          sharedUsers: postResponse.data.sharedUsers,
+        },
+      });
     }
   };
 

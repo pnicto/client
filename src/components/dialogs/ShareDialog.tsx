@@ -6,27 +6,51 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
-import React, { useRef, useState } from "react";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 
 interface Props {
   open: boolean;
   handleClose: () => void;
   handleShare: ((emails: string[]) => Promise<void>) | undefined;
-  userMails: { email: string; username: string; id: number }[];
+  sharedUsers?: number[];
 }
 
-const ShareDialog = ({ open, handleClose, handleShare, userMails }: Props) => {
-  let emailsList: string[] = [];
-  userMails.forEach((user) => {
-    emailsList.push(user.email);
-  });
-  const [emails, setEmails] = useState(emailsList);
+const ShareDialog = ({
+  open,
+  handleClose,
+  handleShare,
+  sharedUsers,
+}: Props) => {
+  const [userMails, setUserMails] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const getResponse: { email: string; username: string; id: number }[] = (
+        await axios.get(`${process.env.REACT_APP_API_URL}/users`)
+      ).data.users;
+
+      const users = getResponse.filter((item) => {
+        return sharedUsers?.includes(item.id);
+      });
+
+      const emailsList: string[] = [];
+
+      users.forEach((user) => {
+        emailsList.push(user.email);
+      });
+
+      setUserMails(emailsList);
+    };
+
+    fetchUsers();
+  }, [sharedUsers]);
 
   const emailsRef = useRef<HTMLInputElement>();
 
   const handleSubmit = () => {
-    if (emails !== undefined) {
-      handleShare?.(emails);
+    if (userMails !== undefined) {
+      handleShare?.(userMails);
     }
   };
 
@@ -45,9 +69,11 @@ const ShareDialog = ({ open, handleClose, handleShare, userMails }: Props) => {
           <TextField
             inputRef={emailsRef}
             autoFocus
-            value={emails.join(",")}
+            value={userMails.join(",")}
             onChange={(event) => {
-              setEmails(event.target.value.split(","));
+              if (event.target.value === "") {
+                setUserMails([]);
+              } else setUserMails(event.target.value.split(","));
             }}
             margin="dense"
             id="emails"

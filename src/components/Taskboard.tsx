@@ -42,10 +42,10 @@ const Taskboard = () => {
     });
     const fetchAllTaskscards = async () => {
       let url;
-      if (isShared) {
-        const activeTaskboard = sharedTaskboards?.find(
-          (taskboard) => taskboard.id === activeTaskboardId
-        );
+      const activeTaskboard = sharedTaskboards?.find(
+        (taskboard) => taskboard.id === activeTaskboardId
+      );
+      if (isShared && activeTaskboard?.userId) {
         url = `${process.env.REACT_APP_API_URL}/taskCards/${activeTaskboardId}/${activeTaskboard?.userId}`;
       } else {
         url = `${process.env.REACT_APP_API_URL}/taskCards/${activeTaskboardId}`;

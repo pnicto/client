@@ -86,6 +86,13 @@ export type ACTIONS =
   | {
       type: "change shared board state";
       payload: boolean;
+    }
+  | {
+      type: "update shared users";
+      payload: {
+        activeTaskboard?: TaskboardInterface;
+        sharedUsers: number[];
+      };
     };
 
 export const reducer = (
@@ -235,6 +242,15 @@ export const reducer = (
       return {
         ...state,
         isLoggedIn: false,
+        isLoading: true,
+        hasUsedGoogleOauth: false,
+        taskboards: {
+          userTaskboards: [],
+          sharedTaskboards: [],
+        },
+        themeMode: "light",
+        isShared: false,
+        currentTaskcards: [],
       };
 
     case "change shared board state":
@@ -243,6 +259,22 @@ export const reducer = (
         isShared: action.payload,
       };
 
+    case "update shared users":
+      const updatedTasksboards = state.taskboards.userTaskboards.map(
+        (taskboard) => {
+          if (taskboard.id === action.payload.activeTaskboard?.id) {
+            taskboard.sharedUsers = action.payload.sharedUsers;
+          }
+          return taskboard;
+        }
+      );
+      return {
+        ...state,
+        taskboards: {
+          ...state.taskboards,
+          userTaskboards: updatedTasksboards,
+        },
+      };
     default:
       throw new Error("Reducer error");
   }

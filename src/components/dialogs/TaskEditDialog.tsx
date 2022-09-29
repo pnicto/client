@@ -58,51 +58,41 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
     if (newDescription === "<p><br></p>") {
       newDescription = "";
     }
-    if (dayjs(eventEndDate)?.isAfter(dayjs(eventStartDate))) {
-      switch (isEvent) {
-        case "true":
-          {
-            const patchBody = {
-              taskTitle: currentTaskTitle,
-              description: newDescription,
-              eventStartDate,
-              eventEndDate,
-            };
-            await axios.patch(url, patchBody);
-            const updatedTasks = tasks.map((taskItem) => {
-              if (taskItem.id === id) {
-                taskItem.title = currentTaskTitle;
-                taskItem.description = newDescription;
-              }
-              return taskItem;
-            });
-            setTasks(updatedTasks);
-          }
-          break;
-        case "false":
-          {
-            const patchBody = {
-              taskTitle: currentTaskTitle,
-              description: newDescription,
-              deadlineDate: taskDate
-                ?.add(1, "d")
-                .format("YYYY-MM-DDTHH:mm:ssZ"),
-            };
-            await axios.patch(url, patchBody);
-            const updatedTasks = tasks.map((taskItem) => {
-              if (taskItem.id === id) {
-                taskItem.title = currentTaskTitle;
-                taskItem.description = newDescription;
-              }
-              return taskItem;
-            });
-            setTasks(updatedTasks);
-          }
-          break;
-        case "": {
+    switch (isEvent) {
+      case "true":
+        if (dayjs(eventEndDate)?.isAfter(dayjs(eventStartDate))) {
           const patchBody = {
             taskTitle: currentTaskTitle,
             description: newDescription,
+            eventStartDate,
+            eventEndDate,
+          };
+          await axios.patch(url, patchBody);
+          const updatedTasks = tasks.map((taskItem) => {
+            if (taskItem.id === id) {
+              taskItem.title = currentTaskTitle;
+              taskItem.description = newDescription;
+            }
+            return taskItem;
+          });
+          setTasks(updatedTasks);
+        } else {
+          globalDispatch({
+            type: "update snackbar",
+            payload: {
+              severity: "error",
+              message: "End date cannot be before start date",
+            },
+          });
+        }
+
+        break;
+      case "false":
+        {
+          const patchBody = {
+            taskTitle: currentTaskTitle,
+            description: newDescription,
+            deadlineDate: taskDate?.add(1, "d").format("YYYY-MM-DDTHH:mm:ssZ"),
           };
           await axios.patch(url, patchBody);
           const updatedTasks = tasks.map((taskItem) => {
@@ -114,15 +104,22 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
           });
           setTasks(updatedTasks);
         }
+        break;
+      case "": {
+        const patchBody = {
+          taskTitle: currentTaskTitle,
+          description: newDescription,
+        };
+        await axios.patch(url, patchBody);
+        const updatedTasks = tasks.map((taskItem) => {
+          if (taskItem.id === id) {
+            taskItem.title = currentTaskTitle;
+            taskItem.description = newDescription;
+          }
+          return taskItem;
+        });
+        setTasks(updatedTasks);
       }
-    } else {
-      globalDispatch({
-        type: "update snackbar",
-        payload: {
-          severity: "error",
-          message: "End date cannot be before start date",
-        },
-      });
     }
   };
 
