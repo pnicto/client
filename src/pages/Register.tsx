@@ -36,6 +36,7 @@ const Register = () => {
     const password = passwordRef.current?.value;
     const username = usernameRef.current?.value;
 
+    // First add email and password to the body later add the username if the page mode is register
     if (!email && !password) {
       globalDispatch({
         type: "update snackbar",
@@ -44,7 +45,11 @@ const Register = () => {
           severity: "error",
         },
       });
+      setIsLoading(false);
+      return;
     }
+
+    const url = `${process.env.REACT_APP_BASE_URL}/user/${pageMode}`;
 
     let postBody: {
       email: string | undefined;
@@ -55,12 +60,8 @@ const Register = () => {
       password,
     };
 
-    const url = `${process.env.REACT_APP_BASE_URL}/user/${pageMode}`;
-
     // Update post body according to the pageMode and do basic validation for null fields
-    if (pageMode === "register" && username) {
-      postBody = { ...postBody, username };
-    } else {
+    if (pageMode === "register" && !username) {
       globalDispatch({
         type: "update snackbar",
         payload: {
@@ -68,9 +69,26 @@ const Register = () => {
           severity: "error",
         },
       });
+      return;
     }
+
+    if (pageMode === "register" && username) {
+      postBody = { ...postBody, username };
+    }
+
     const postResponse = await axios.post(url, postBody);
 
+    if (postResponse.status === 400) {
+      globalDispatch({
+        type: "update snackbar",
+        payload: {
+          message: "Please provide the required details",
+          severity: "error",
+        },
+      });
+      setIsLoading(false);
+      return;
+    }
     const { user } = postResponse.data;
 
     if (pageMode === "login" && postResponse.status === 200) {
