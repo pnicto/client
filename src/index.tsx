@@ -13,7 +13,7 @@ root.render(
     <BrowserRouter>
       <AppProvider>
         <GoogleOAuthProvider
-          clientId={process.env.REACT_APP_CLIENT_ID as string}
+          clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID as string}
         >
           <App />
         </GoogleOAuthProvider>
