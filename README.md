@@ -1,24 +1,23 @@
 # yet another todo frontend
-Just another todo app I made.
+Just another todo app built in React and Material UI.
 
 ## Features
 
-- Common features of any todo app.
+- Generic features of any todo app.
+- Create google calendar events/google tasks reminders for tasks.
 - Soon&trade;
 
 ## TODO
 
-- [] Edit menu for tasks
 - [] Subtasks
 - [] Priorities for tasks
-- [] Google calendar events for the tasks
 - [] Dragging and dropping lists b/w boards or in same board
 - [] Sorting tasks in list
 
 ## How to run
 
-1. Clone both [client](https://github.com/pnicto/client) and [server](https://github.com/pnicto/server) repos.
+1. Clone both [client](https://github.com/pnicto/yet-another-todo-frontend) and [server](https://github.com/pnicto/yet-another-todo-backend) repos.
 2. Install node_modules in respective folders using `npm i`.
-3. Create a `.env` file with `REACT_APP_BASE_URL=server url`
+3. Rename `.env.temp` to `.env` and add the required values.
 4. Follow the server readme for backend setup.
 5. `npm start` to run. Run both repos.
