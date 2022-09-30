@@ -6,7 +6,7 @@ import { useGlobalContext } from "../context/appContext";
 
 const GithubOauthWaitPage = () => {
   const navigate = useNavigate();
-  const { globalDispatch } = useGlobalContext();
+  const { globalDispatch, globalState } = useGlobalContext();
 
   useEffect(() => {
     // Get the code github gives you on the callback url
@@ -27,7 +27,6 @@ const GithubOauthWaitPage = () => {
             user: postResponse.data,
           },
         });
-        navigate("/app");
         globalDispatch({
           type: "update snackbar",
           payload: {
@@ -35,13 +34,24 @@ const GithubOauthWaitPage = () => {
             severity: "success",
           },
         });
+        console.log(postResponse);
+        globalDispatch({
+          type: "set session token",
+          payload: postResponse.data.accessToken,
+        });
+        navigate("/app");
       }
     };
 
     if (code) {
       githubOauth();
     }
-  }, [globalDispatch, navigate]);
+
+    if (globalState.isLoggedIn) {
+      navigate("/app");
+      return;
+    }
+  }, [globalDispatch, globalState.isLoggedIn, navigate]);
 
   // In the meanwhile show the loading indicator
   return (

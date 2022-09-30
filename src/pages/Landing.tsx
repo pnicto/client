@@ -1,10 +1,21 @@
 import { ReactComponent as LandingTasksSvg } from "../assets/landingTasks.svg";
 import TaskRoundedIcon from "@mui/icons-material/TaskRounded";
 import { Button } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AlertSnackbar from "../components/misc/AlertSnackbar";
+import { useEffect } from "react";
+import { useGlobalContext } from "../context/appContext";
 
 const Landing = () => {
+  const { globalState } = useGlobalContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (globalState.isLoggedIn) {
+      navigate("/app");
+    }
+  }, [globalState.isLoggedIn, navigate]);
+
   return (
     <>
       <div id="landing-page">
