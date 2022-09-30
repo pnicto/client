@@ -18,11 +18,12 @@ import { useRef, useState } from "react";
 import { useTaskcardContext } from "../../context/taskcardContext";
 import { TaskitemInterface } from "../../interfaces/interfaces";
 import { RichTextEditor } from "@mantine/rte";
-import BasicDatePicker from "../misc/BasicDatePicker";
+import BasicDatePicker from "../Pickers/BasicDatePicker";
 import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import BasicDateTimePicker from "../misc/BasicDateTimePicker";
+import BasicDateTimePicker from "../Pickers/BasicDateTimePicker";
 import { useGlobalContext } from "../../context/appContext";
+import { errorCodes } from "../../interfaces/errors";
 
 axios.defaults.withCredentials = true;
 
@@ -68,81 +69,117 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
     if (newDescription === "<p><br></p>") {
       newDescription = "";
     }
-    switch (isEvent) {
-      // If isEvent true then verify the dates and make request
-      case "true":
-        if (dayjs(eventEndDate)?.isAfter(dayjs(eventStartDate))) {
-          const patchBody = {
-            taskTitle: currentTaskTitle,
-            description: newDescription,
-            eventStartDate,
-            eventEndDate,
-          };
-          await axios.patch(url, patchBody);
-          const updatedTasks = tasks.map((taskItem) => {
-            if (taskItem.id === id) {
-              taskItem.title = currentTaskTitle;
-              taskItem.description = newDescription;
-            }
-            return taskItem;
-          });
-          setTasks(updatedTasks);
-        } else {
-          globalDispatch({
-            type: "update snackbar",
-            payload: {
-              severity: "error",
-              message: "End date cannot be before start date",
-            },
-          });
-        }
-        break;
-
-      // If tasks reminder
-      // TODO: Verify the date offset
-      case "false":
-        {
-          const patchBody = {
-            taskTitle: currentTaskTitle,
-            description: newDescription,
-            deadlineDate: taskDate?.add(1, "d").format("YYYY-MM-DDTHH:mm:ssZ"),
-          };
-          await axios.patch(url, patchBody);
-          const updatedTasks = tasks.map((taskItem) => {
-            if (taskItem.id === id) {
-              taskItem.title = currentTaskTitle;
-              taskItem.description = newDescription;
-            }
-            return taskItem;
-          });
-          setTasks(updatedTasks);
-        }
-        break;
-
-      // A normal taskboard task
-      case "": {
-        const patchBody = {
-          taskTitle: currentTaskTitle,
-          description: newDescription,
-        };
-        await axios.patch(url, patchBody);
-        const updatedTasks = tasks.map((taskItem) => {
-          if (taskItem.id === id) {
-            taskItem.title = currentTaskTitle;
-            taskItem.description = newDescription;
+    try {
+      switch (isEvent) {
+        // If isEvent true then verify the dates and make request
+        case "true":
+          if (dayjs(eventEndDate)?.isAfter(dayjs(eventStartDate))) {
+            const patchBody = {
+              taskTitle: currentTaskTitle,
+              description: newDescription,
+              eventStartDate,
+              eventEndDate,
+            };
+            await axios.patch(url, patchBody);
+            const updatedTasks = tasks.map((taskItem) => {
+              if (taskItem.id === id) {
+                taskItem.title = currentTaskTitle;
+                taskItem.description = newDescription;
+              }
+              return taskItem;
+            });
+            setTasks(updatedTasks);
+          } else {
+            globalDispatch({
+              type: "update snackbar",
+              payload: {
+                severity: "error",
+                message: "End date cannot be before start date",
+              },
+            });
           }
-          return taskItem;
+          break;
+
+        // If tasks reminder
+        // TODO: Verify the date offset
+        case "false":
+          {
+            const patchBody = {
+              taskTitle: currentTaskTitle,
+              description: newDescription,
+              deadlineDate: taskDate,
+            };
+            await axios.patch(url, patchBody);
+            const updatedTasks = tasks.map((taskItem) => {
+              if (taskItem.id === id) {
+                taskItem.title = currentTaskTitle;
+                taskItem.description = newDescription;
+              }
+              return taskItem;
+            });
+            setTasks(updatedTasks);
+          }
+          break;
+
+        // A normal taskboard task
+        case "": {
+          const patchBody = {
+            taskTitle: currentTaskTitle,
+            description: newDescription,
+          };
+          await axios.patch(url, patchBody);
+          const updatedTasks = tasks.map((taskItem) => {
+            if (taskItem.id === id) {
+              taskItem.title = currentTaskTitle;
+              taskItem.description = newDescription;
+            }
+            return taskItem;
+          });
+          setTasks(updatedTasks);
+        }
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.code === errorCodes.networkError) {
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "Could not update task",
+            severity: "error",
+          },
         });
-        setTasks(updatedTasks);
       }
     }
   };
 
   const deleteTask = async () => {
     const url = `${process.env.REACT_APP_API_URL}/tasks/${id}`;
-    await axios.delete(url);
-    const updatedTasks = tasks.filter((taskItem) => task.id !== taskItem.id);
-    setTasks(updatedTasks);
+    try {
+      const deleteResponse = await axios.delete(url);
+      if (deleteResponse.status === 200) {
+        const updatedTasks = tasks.filter(
+          (taskItem) => task.id !== taskItem.id
+        );
+        setTasks(updatedTasks);
+      } else {
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "Cannot delete task",
+            severity: "error",
+          },
+        });
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.code === errorCodes.networkError) {
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "There's some issue with your network",
+            severity: "error",
+          },
+        });
+      }
+    }
   };
 
   const handleDateChange = (newDate: Dayjs | null) => {
