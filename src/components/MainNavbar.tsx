@@ -64,7 +64,6 @@ const MainNavbar = () => {
     setAnchorEl(null);
   };
 
-  // TODO:Error handling for blank name
   const handleRenameTaskboard = async (newBoardTitle: string) => {
     if (newBoardTitle) {
       const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
@@ -82,26 +81,54 @@ const MainNavbar = () => {
           severity: "info",
         },
       });
+    } else {
+      globalDispatch({
+        type: "update snackbar",
+        payload: {
+          message: "Board title cannot be empty",
+          severity: "error",
+        },
+      });
     }
   };
 
   const deleteTaskboard = async () => {
     const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
-    const deleteResponse = await axios.delete(url);
-    const deletedTaskboard = deleteResponse.data;
-    if (deleteResponse.status === 200) {
-      globalDispatch({
-        type: "delete taskboard",
-        payload: deletedTaskboard,
-      });
-      globalDispatch({
-        type: "update snackbar",
-        payload: {
-          message: "Taskboard deleted",
-          severity: "error",
-        },
-      });
-      closeBoardMenu();
+    try {
+      const deleteResponse = await axios.delete(url);
+      const deletedTaskboard = deleteResponse.data;
+      if (deleteResponse.status === 200) {
+        globalDispatch({
+          type: "delete taskboard",
+          payload: deletedTaskboard,
+        });
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "Taskboard deleted",
+            severity: "error",
+          },
+        });
+        closeBoardMenu();
+      } else {
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "Cannot delete taskboard",
+            severity: "error",
+          },
+        });
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.code === errorCodes.networkError) {
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "There's some issue with your network",
+            severity: "error",
+          },
+        });
+      }
     }
   };
 

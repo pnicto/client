@@ -6,6 +6,7 @@ import AddDialog from "./dialogs/AddDialog";
 import { Add } from "@mui/icons-material";
 import axios from "axios";
 import { TaskcardInterface } from "../interfaces/interfaces";
+import { errorCodes } from "../interfaces/errors";
 
 const Taskboard = () => {
   const [isShared, setIsShared] = useState(false);
@@ -53,14 +54,29 @@ const Taskboard = () => {
       } else {
         url = `${process.env.REACT_APP_API_URL}/taskCards/${activeTaskboardId}`;
       }
-
-      const getResponse = await axios.get(url);
-      const responseData: TaskcardInterface[] = getResponse.data;
-      if (getResponse.status === 200) {
-        globalDispatch({
-          type: "set taskcards",
-          payload: responseData,
-        });
+      try {
+        const getResponse = await axios.get(url);
+        const responseData: TaskcardInterface[] = getResponse.data;
+        if (getResponse.status === 200) {
+          globalDispatch({
+            type: "set taskcards",
+            payload: responseData,
+          });
+        }
+      } catch (error) {
+        if (
+          axios.isAxiosError(error) &&
+          error.code === errorCodes.networkError
+        ) {
+          globalDispatch({
+            type: "update snackbar",
+            payload: {
+              message:
+                "There's some issue with your network. Could not fetch taskcards",
+              severity: "error",
+            },
+          });
+        }
       }
     };
 

@@ -12,6 +12,7 @@ import { TaskitemInterface } from "../interfaces/interfaces";
 import TaskEditMenu from "../components/dialogs/TaskEditDialog";
 import { useGlobalContext } from "../context/appContext";
 import parse from "html-react-parser";
+import { errorCodes } from "../interfaces/errors";
 
 interface Props {
   task: TaskitemInterface;
@@ -19,7 +20,7 @@ interface Props {
 
 const Taskitem = ({ task }: Props) => {
   const [isComplete, setIsComplete] = useState(task.completed);
-  const { globalState } = useGlobalContext();
+  const { globalState, globalDispatch } = useGlobalContext();
   const { isShared } = globalState;
 
   // Edit dialog state
@@ -34,11 +35,23 @@ const Taskitem = ({ task }: Props) => {
   };
 
   const changeCompletionStatus = async () => {
-    const url = `${process.env.REACT_APP_API_URL}/tasks/${task.id}`;
-    await axios.patch(url, {
-      completed: !isComplete,
-    });
-    setIsComplete(!isComplete);
+    try {
+      const url = `${process.env.REACT_APP_API_URL}/tasks/${task.id}`;
+      await axios.patch(url, {
+        completed: !isComplete,
+      });
+      setIsComplete(!isComplete);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.code === errorCodes.networkError) {
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "There's some issue with your network",
+            severity: "error",
+          },
+        });
+      }
+    }
   };
 
   // If shared make it view only

@@ -9,6 +9,7 @@ import AlertSnackbar from "./misc/AlertSnackbar";
 import Taskboard from "./Taskboard";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import LoadingIndicator from "./misc/LoadingIndicator";
+import { errorCodes } from "../interfaces/errors";
 
 axios.defaults.withCredentials = true;
 
@@ -61,32 +62,47 @@ const MainApp = () => {
   useEffect(() => {
     const fetchAllTasksboards = async () => {
       const url = `${process.env.REACT_APP_API_URL}/taskboards`;
-      const getResponse = await axios.get(url);
-      const responseData: {
-        userTaskboards: TaskboardInterface[];
-        sharedTaskboards: TaskboardInterface[];
-      } = getResponse.data;
+      try {
+        const getResponse = await axios.get(url);
+        const responseData: {
+          userTaskboards: TaskboardInterface[];
+          sharedTaskboards: TaskboardInterface[];
+        } = getResponse.data;
 
-      if (getResponse.status === 200) {
-        // If there are no tasksboards in the database, create a tasksboard and set the state.
-        if (responseData.userTaskboards.length === 0) {
-          const postResponse = await axios.post(url);
-          const defaultTasksboard: TaskboardInterface = postResponse.data;
-          globalDispatch({
-            type: "set taskboards",
-            payload: {
-              taskboards: {
-                userTaskboards: [defaultTasksboard],
+        if (getResponse.status === 200) {
+          // If there are no tasksboards in the database, create a tasksboard and set the state.
+          if (responseData.userTaskboards.length === 0) {
+            const postResponse = await axios.post(url);
+            const defaultTasksboard: TaskboardInterface = postResponse.data;
+            globalDispatch({
+              type: "set taskboards",
+              payload: {
+                taskboards: {
+                  userTaskboards: [defaultTasksboard],
+                },
+                activeTaskboardId: defaultTasksboard.id,
               },
-              activeTaskboardId: defaultTasksboard.id,
-            },
-          });
-        } else {
+            });
+          } else {
+            globalDispatch({
+              type: "set taskboards",
+              payload: {
+                taskboards: responseData,
+                activeTaskboardId: responseData.userTaskboards[0].id,
+              },
+            });
+          }
+        }
+      } catch (error) {
+        if (
+          axios.isAxiosError(error) &&
+          error.code === errorCodes.networkError
+        ) {
           globalDispatch({
-            type: "set taskboards",
+            type: "update snackbar",
             payload: {
-              taskboards: responseData,
-              activeTaskboardId: responseData.userTaskboards[0].id,
+              message: "Could not fetch all taskboards",
+              severity: "error",
             },
           });
         }

@@ -8,6 +8,7 @@ import AddDialog from "./dialogs/AddDialog";
 import OptionsMenu from "./menus/OptionsMenu";
 import Taskitem from "./Taskitem";
 import { TaskcardProvider } from "../context/taskcardContext";
+import { errorCodes } from "../interfaces/errors";
 
 type Props = {
   taskcard: TaskcardInterface;
@@ -20,11 +21,23 @@ const Taskcard = ({ taskcard }: Props) => {
 
   const deleteTaskcard = async (taskcardId: number) => {
     const url = `${process.env.REACT_APP_API_URL}/taskcards/${taskcardId}`;
-    await axios.delete(url);
-    globalDispatch({
-      type: "delete taskcard",
-      payload: taskcardId,
-    });
+    try {
+      await axios.delete(url);
+      globalDispatch({
+        type: "delete taskcard",
+        payload: taskcardId,
+      });
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.code === errorCodes.networkError) {
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "Could not delete taskcard",
+            severity: "error",
+          },
+        });
+      }
+    }
   };
 
   const handleAddTask = async () => {
@@ -34,25 +47,69 @@ const Taskcard = ({ taskcard }: Props) => {
         taskTitle: taskToBeAdded,
       };
       const url = `${process.env.REACT_APP_API_URL}/tasks/${taskcard.id}`;
-      const postResponse = await axios.post(url, postBody);
-      const newTask = postResponse.data;
-      setTasks([...tasks, newTask]);
-      setIsAddDialogOpen(false);
+      try {
+        const postResponse = await axios.post(url, postBody);
+        const newTask = postResponse.data;
+        setTasks([...tasks, newTask]);
+        setIsAddDialogOpen(false);
+      } catch (error) {
+        if (
+          axios.isAxiosError(error) &&
+          error.code === errorCodes.networkError
+        ) {
+          globalDispatch({
+            type: "update snackbar",
+            payload: {
+              message: "Could not create new task",
+              severity: "error",
+            },
+          });
+        }
+      }
     } else {
       setIsAddDialogOpen(true);
+      globalDispatch({
+        type: "update snackbar",
+        payload: {
+          message: "task title cannot be empty",
+          severity: "error",
+        },
+      });
     }
   };
 
   const handleRenameList = async (newListTitle: string) => {
     if (newListTitle) {
       const url = `${process.env.REACT_APP_API_URL}/taskcards/${taskcard.id}`;
-      await axios.patch(url, {
-        cardTitle: newListTitle,
-      });
-      globalDispatch({
-        type: "update taskcard",
-        payload: { newListTitle, taskcardId: taskcard.id },
-      });
+      try {
+        await axios.patch(url, {
+          cardTitle: newListTitle,
+        });
+        globalDispatch({
+          type: "update taskcard",
+          payload: { newListTitle, taskcardId: taskcard.id },
+        });
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "New taskcard created",
+            severity: "success",
+          },
+        });
+      } catch (error) {
+        if (
+          axios.isAxiosError(error) &&
+          error.code === errorCodes.networkError
+        ) {
+          globalDispatch({
+            type: "update snackbar",
+            payload: {
+              message: "Could not rename task",
+              severity: "error",
+            },
+          });
+        }
+      }
     }
   };
 
@@ -74,14 +131,30 @@ const Taskcard = ({ taskcard }: Props) => {
   useEffect(() => {
     const fetchAllTasks = async () => {
       const url = `${process.env.REACT_APP_API_URL}/tasks/${taskcard.id}`;
-      const getResponse = await axios.get(url);
-      const responseData: TaskitemInterface[] = getResponse.data;
-      if (getResponse.status === 200) {
-        setTasks(responseData);
+      try {
+        const getResponse = await axios.get(url);
+        const responseData: TaskitemInterface[] = getResponse.data;
+        if (getResponse.status === 200) {
+          setTasks(responseData);
+        }
+      } catch (error) {
+        if (
+          axios.isAxiosError(error) &&
+          error.code === errorCodes.networkError
+        ) {
+          globalDispatch({
+            type: "update snackbar",
+            payload: {
+              message:
+                "Something went wrong with the network. Could not fetch all tasks",
+              severity: "error",
+            },
+          });
+        }
       }
     };
     fetchAllTasks();
-  }, [taskcard.id]);
+  }, [globalDispatch, taskcard.id]);
 
   // Dialog actions
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
