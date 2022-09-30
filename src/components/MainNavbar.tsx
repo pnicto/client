@@ -199,14 +199,24 @@ const MainNavbar = () => {
     if (emails) {
       const postBody = { emails };
       try {
-        const postResponse = await axios.patch(url, postBody);
+        const patchResponse = await axios.patch(url, postBody);
         globalDispatch({
           type: "update shared users",
           payload: {
             activeTaskboard: activeTasksboard,
-            sharedUsers: postResponse.data.sharedUsers,
+            sharedUsers: patchResponse.data.sharedUsers,
           },
         });
+        if (patchResponse.status === 200) {
+          globalDispatch({
+            type: "update snackbar",
+            payload: {
+              message:
+                emails.length === 0 ? "Revoked access" : "Shared taskboard",
+              severity: "success",
+            },
+          });
+        }
       } catch (error) {
         if (
           axios.isAxiosError(error) &&
