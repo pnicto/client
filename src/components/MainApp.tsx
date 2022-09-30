@@ -60,6 +60,16 @@ const MainApp = () => {
   });
 
   useEffect(() => {
+    if (!isLoggedIn) {
+      navigate("/form");
+      globalDispatch({
+        type: "update snackbar",
+        payload: {
+          message: "Please login/register to continue",
+          severity: "error",
+        },
+      });
+    }
     const fetchAllTasksboards = async () => {
       const url = `${process.env.REACT_APP_API_URL}/taskboards`;
       try {
@@ -109,7 +119,7 @@ const MainApp = () => {
       }
     };
 
-    if (isLoading) {
+    if (isLoading && isLoggedIn) {
       fetchAllTasksboards();
     }
   }, [globalDispatch, isLoading, isLoggedIn, navigate]);
