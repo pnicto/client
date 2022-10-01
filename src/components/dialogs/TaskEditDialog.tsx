@@ -148,6 +148,18 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
           },
         });
       }
+      if (
+        axios.isAxiosError(error) &&
+        error.code === errorCodes.badRequestError
+      ) {
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "You have another event clashing",
+            severity: "error",
+          },
+        });
+      }
     }
   };
 
@@ -294,18 +306,20 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
 
           {isEvent === "false" && (
             <>
-              <BasicDatePicker
-                date={taskDate}
-                handleDateChange={handleDateChange}
-              />
-              <IconButton
-                color="error"
-                onClick={() => {
-                  setTaskDate(null);
-                }}
-              >
-                <Clear />
-              </IconButton>
+              <div className="pickers-div">
+                <BasicDatePicker
+                  date={taskDate}
+                  handleDateChange={handleDateChange}
+                />
+                <IconButton
+                  color="error"
+                  onClick={() => {
+                    setTaskDate(null);
+                  }}
+                >
+                  <Clear />
+                </IconButton>
+              </div>
             </>
           )}
 
