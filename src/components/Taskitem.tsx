@@ -37,10 +37,12 @@ const Taskitem = ({ task }: Props) => {
   const changeCompletionStatus = async () => {
     try {
       const url = `${process.env.REACT_APP_API_URL}/tasks/${task.id}`;
-      await axios.patch(url, {
+      const patchResponse = await axios.patch(url, {
         completed: !isComplete,
       });
-      setIsComplete(!isComplete);
+      if (patchResponse.status === 200) {
+        setIsComplete(!isComplete);
+      }
     } catch (error) {
       if (axios.isAxiosError(error) && error.code === errorCodes.networkError) {
         globalDispatch({
