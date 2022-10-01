@@ -66,7 +66,7 @@ const MainFooter = () => {
               <Button
                 key={taskboard.id}
                 variant="contained"
-                color="secondary"
+                color="info"
                 className="active shared"
                 onClick={() => changeActiveTaskboard(taskboard.id)}
               >
@@ -79,7 +79,7 @@ const MainFooter = () => {
                 className="shared"
                 key={taskboard.id}
                 variant="contained"
-                color="secondary"
+                color="info"
                 onClick={() => changeActiveTaskboard(taskboard.id)}
               >
                 <p>{taskboard.boardTitle}</p>
