@@ -21,3 +21,4 @@ Just another todo app built in React and Material UI.
 3. Rename `.env.temp` to `.env` and add the required values.
 4. Follow the server readme for backend setup.
 5. `npm start` to run. Run both repos.
+6. `npm run build && serve -g build` to run the built version.
