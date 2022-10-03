@@ -8,6 +8,7 @@ import { useGlobalContext } from "../context/appContext";
 import AlertSnackbar from "../components/misc/AlertSnackbar";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Google, GitHub } from "@mui/icons-material";
+import { errorCodes } from "../interfaces/errors";
 
 const Register = () => {
   // Loading state for the button
@@ -75,61 +76,77 @@ const Register = () => {
     if (pageMode === "register" && username) {
       postBody = { ...postBody, username };
     }
+    try {
+      const postResponse = await axios.post(url, postBody);
 
-    const postResponse = await axios.post(url, postBody);
+      if (postResponse.status === 400) {
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "Please provide the required details",
+            severity: "error",
+          },
+        });
+        setIsLoading(false);
+        return;
+      }
+      const { user } = postResponse.data;
 
-    if (postResponse.status === 400) {
-      globalDispatch({
-        type: "update snackbar",
-        payload: {
-          message: "Please provide the required details",
-          severity: "error",
-        },
-      });
-      setIsLoading(false);
-      return;
-    }
-    const { user } = postResponse.data;
+      if (pageMode === "login" && postResponse.status === 200) {
+        setIsLoading(false);
+        // If login is successful, navigate to app
+        navigate("/app");
+        globalDispatch({
+          type: "login user",
+          payload: { user } as {
+            user: { email: string; id: number; username: string };
+          },
+        });
+        globalDispatch({
+          type: "set session token",
+          payload: postResponse.data.accessToken,
+        });
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "Login successful",
+            severity: "success",
+          },
+        });
+      }
 
-    if (pageMode === "login" && postResponse.status === 200) {
-      setIsLoading(false);
-      // If login is successful, navigate to app
-      navigate("/app");
-      globalDispatch({
-        type: "login user",
-        payload: { user } as {
-          user: { email: string; id: number; username: string };
-        },
-      });
-      globalDispatch({
-        type: "set session token",
-        payload: postResponse.data.accessToken,
-      });
-      globalDispatch({
-        type: "update snackbar",
-        payload: {
-          message: "Login successful",
-          severity: "success",
-        },
-      });
-    }
+      if (pageMode === "register" && postResponse.status === 201) {
+        setIsLoading(false);
+        // If registration is successful, navigate to form/login
+        navigate("/form", {
+          state: "login",
+        });
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            severity: "success",
+            message: "Registration successful. Please login to continue",
+          },
+        });
 
-    if (pageMode === "register" && postResponse.status === 201) {
-      setIsLoading(false);
-      // If registration is successful, navigate to form/login
-      navigate("/form", {
-        state: "login",
-      });
-      globalDispatch({
-        type: "update snackbar",
-        payload: {
-          severity: "success",
-          message: "Registration successful. Please login to continue",
-        },
-      });
-
-      if (passwordRef.current?.value) {
-        passwordRef.current.value = "";
+        if (passwordRef.current?.value) {
+          passwordRef.current.value = "";
+        }
+      }
+    } catch (error) {
+      if (
+        axios.isAxiosError(error) &&
+        error.code === errorCodes.badRequestError
+      ) {
+        const { msg } = error.response?.data as { msg: string };
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: msg,
+            severity: "error",
+          },
+        });
+        setIsLoading(false);
       }
     }
   };
