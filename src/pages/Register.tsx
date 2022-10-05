@@ -158,22 +158,25 @@ const Register = () => {
       const postResponse = await axios.post(url, {
         code: tokenRes.code,
       });
-      globalDispatch({
-        type: "login user",
-        payload: { user: postResponse.data.user, hasUsedGoogleOauth: true },
-      });
-      globalDispatch({
-        type: "update snackbar",
-        payload: {
-          message: "Login successful",
-          severity: "success",
-        },
-      });
-      globalDispatch({
-        type: "set session token",
-        payload: postResponse.data.accessToken,
-      });
-      if (postResponse.status === 200) navigate("/app");
+      
+      if (postResponse.status === 200) {
+        navigate("/app");
+        globalDispatch({
+          type: "login user",
+          payload: { user: postResponse.data.user, hasUsedGoogleOauth: true },
+        });
+        globalDispatch({
+          type: "update snackbar",
+          payload: {
+            message: "Login successful",
+            severity: "success",
+          },
+        });
+        globalDispatch({
+          type: "set session token",
+          payload: postResponse.data.accessToken,
+        });
+      }
     },
     flow: "auth-code",
     onError: (message) => {
