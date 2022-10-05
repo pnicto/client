@@ -101,7 +101,6 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
           break;
 
         // If tasks reminder
-        // TODO: Verify the date offset
         case "false":
           {
             const patchBody = {
