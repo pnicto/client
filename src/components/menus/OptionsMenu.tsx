@@ -32,24 +32,15 @@ const OptionsMenu = ({
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
-  // TODO:Convert them into a single function
-  const handleClickOpen = () => {
-    setIsDeleteAlertDialogOpen(true);
+  const handleDialogOpen = (
+    setDialogState: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    setDialogState(true);
   };
-  const handleClose = () => {
-    setIsDeleteAlertDialogOpen(false);
-  };
-  const handleRenameDialogOpen = () => {
-    setIsRenameDialogOpen(true);
-  };
-  const handleRenameDialogClose = () => {
-    setIsRenameDialogOpen(false);
-  };
-  const handleShareDialogOpen = () => {
-    setIsShareDialogOpen(true);
-  };
-  const handleShareDialogClose = () => {
-    setIsShareDialogOpen(false);
+  const handleDialogClose = (
+    setDialogState: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    setDialogState(false);
   };
 
   return (
@@ -62,11 +53,17 @@ const OptionsMenu = ({
         "aria-labelledby": "basic-button",
       }}
     >
-      <MenuItem onClick={handleRenameDialogOpen}>Rename {component}</MenuItem>
+      <MenuItem
+        onClick={() => {
+          handleDialogOpen(setIsRenameDialogOpen);
+        }}
+      >
+        Rename {component}
+      </MenuItem>
       <AddDialog
         dialogTitle={`Rename ${component}`}
         handleClose={() => {
-          handleRenameDialogClose();
+          handleDialogClose(setIsRenameDialogOpen);
         }}
         dialogLabel={`${component} name`}
         open={isRenameDialogOpen}
@@ -79,7 +76,7 @@ const OptionsMenu = ({
 
       <MenuItem
         onClick={() => {
-          handleClickOpen();
+          handleDialogOpen(setIsDeleteAlertDialogOpen);
         }}
       >
         Delete {component}
@@ -87,7 +84,9 @@ const OptionsMenu = ({
       <AlertDialog
         dialogTitle="Are you sure?"
         open={isDeleteAlertDialogOpen}
-        handleClose={handleClose}
+        handleClose={() => {
+          handleDialogClose(setIsDeleteAlertDialogOpen);
+        }}
         handleAlert={deleteAction}
       />
 
@@ -96,7 +95,7 @@ const OptionsMenu = ({
         <MenuItem
           key={1}
           onClick={() => {
-            handleShareDialogOpen();
+            handleDialogOpen(setIsShareDialogOpen);
           }}
         >
           Share {component}
@@ -104,7 +103,9 @@ const OptionsMenu = ({
         <ShareDialog
           key={2}
           open={isShareDialogOpen}
-          handleClose={handleShareDialogClose}
+          handleClose={() => {
+            handleDialogClose(setIsShareDialogOpen);
+          }}
           handleShare={shareAction}
           sharedUsers={sharedUsers}
         />,
