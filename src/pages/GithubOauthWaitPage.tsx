@@ -15,7 +15,7 @@ const GithubOauthWaitPage = () => {
     // Function to make request to server with the code
     const githubOauth = async () => {
       const postResponse = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}/github/auth`,
+        `${import.meta.env.VITE_APP_BASE_URL}/github/auth`,
         {
           code,
         }

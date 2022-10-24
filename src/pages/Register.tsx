@@ -50,7 +50,7 @@ const Register = () => {
       return;
     }
 
-    const url = `${process.env.REACT_APP_BASE_URL}/user/${pageMode}`;
+    const url = `${import.meta.env.VITE_APP_BASE_URL}/user/${pageMode}`;
 
     let postBody: {
       email: string | undefined;
@@ -154,11 +154,11 @@ const Register = () => {
   // Login func for react-oauth pkg
   const login = useGoogleLogin({
     onSuccess: async (tokenRes) => {
-      const url = `${process.env.REACT_APP_BASE_URL}/user/login`;
+      const url = `${import.meta.env.VITE_APP_BASE_URL}/user/login`;
       const postResponse = await axios.post(url, {
         code: tokenRes.code,
       });
-      
+
       if (postResponse.status === 200) {
         navigate("/app");
         globalDispatch({
@@ -260,7 +260,9 @@ const Register = () => {
                     Sign in with google
                   </Button>
                   <Button
-                    href={`https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&scope=user`}
+                    href={`https://github.com/login/oauth/authorize?client_id=${
+                      import.meta.env.VITE_APP_GITHUB_CLIENT_ID
+                    }&scope=user`}
                     variant="contained"
                     className="login-btn"
                   >

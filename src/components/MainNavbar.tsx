@@ -66,7 +66,9 @@ const MainNavbar = () => {
 
   const handleRenameTaskboard = async (newBoardTitle: string) => {
     if (newBoardTitle) {
-      const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
+      const url = `${
+        import.meta.env.VITE_APP_API_URL
+      }/taskboards/${activeTaskboardId}`;
       await axios.patch(url, {
         taskboardTitle: newBoardTitle,
       });
@@ -93,7 +95,9 @@ const MainNavbar = () => {
   };
 
   const deleteTaskboard = async () => {
-    const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
+    const url = `${
+      import.meta.env.VITE_APP_API_URL
+    }/taskboards/${activeTaskboardId}`;
     try {
       const deleteResponse = await axios.delete(url);
       const deletedTaskboard = deleteResponse.data;
@@ -148,7 +152,9 @@ const MainNavbar = () => {
 
   // Func for clearing all taskcards
   const handleClearAll = async () => {
-    const url = `${process.env.REACT_APP_API_URL}/taskcards/clearTaskcards/${activeTaskboardId}`;
+    const url = `${
+      import.meta.env.VITE_APP_API_URL
+    }/taskcards/clearTaskcards/${activeTaskboardId}`;
     const deleteResponse = await axios.delete(url);
     if (deleteResponse.status === 200) {
       globalDispatch({
@@ -165,7 +171,7 @@ const MainNavbar = () => {
   };
 
   const handleLogout = async () => {
-    const url = `${process.env.REACT_APP_BASE_URL}/user/logout`;
+    const url = `${import.meta.env.VITE_APP_BASE_URL}/user/logout`;
     try {
       const getResponse = await axios.get(url);
       if (getResponse.status === 200) {
@@ -195,7 +201,9 @@ const MainNavbar = () => {
   };
 
   const shareBoard = async (emails: string[]) => {
-    const url = `${process.env.REACT_APP_API_URL}/taskboards/${activeTaskboardId}`;
+    const url = `${
+      import.meta.env.VITE_APP_API_URL
+    }/taskboards/${activeTaskboardId}`;
     if (emails) {
       const postBody = { emails };
       try {

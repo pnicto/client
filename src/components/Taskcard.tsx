@@ -20,7 +20,7 @@ const Taskcard = ({ taskcard }: Props) => {
   const { isShared } = globalState;
 
   const deleteTaskcard = async (taskcardId: number) => {
-    const url = `${process.env.REACT_APP_API_URL}/taskcards/${taskcardId}`;
+    const url = `${import.meta.env.VITE_APP_API_URL}/taskcards/${taskcardId}`;
     try {
       await axios.delete(url);
       globalDispatch({
@@ -46,7 +46,7 @@ const Taskcard = ({ taskcard }: Props) => {
       const postBody = {
         taskTitle: taskToBeAdded,
       };
-      const url = `${process.env.REACT_APP_API_URL}/tasks/${taskcard.id}`;
+      const url = `${import.meta.env.VITE_APP_API_URL}/tasks/${taskcard.id}`;
       try {
         const postResponse = await axios.post(url, postBody);
         const newTask = postResponse.data;
@@ -80,7 +80,9 @@ const Taskcard = ({ taskcard }: Props) => {
 
   const handleRenameList = async (newListTitle: string) => {
     if (newListTitle) {
-      const url = `${process.env.REACT_APP_API_URL}/taskcards/${taskcard.id}`;
+      const url = `${import.meta.env.VITE_APP_API_URL}/taskcards/${
+        taskcard.id
+      }`;
       try {
         await axios.patch(url, {
           cardTitle: newListTitle,
@@ -130,7 +132,7 @@ const Taskcard = ({ taskcard }: Props) => {
 
   useEffect(() => {
     const fetchAllTasks = async () => {
-      const url = `${process.env.REACT_APP_API_URL}/tasks/${taskcard.id}`;
+      const url = `${import.meta.env.VITE_APP_API_URL}/tasks/${taskcard.id}`;
       try {
         const getResponse = await axios.get(url);
         const responseData: TaskitemInterface[] = getResponse.data;

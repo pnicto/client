@@ -62,7 +62,7 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   const { hasUsedGoogleOauth } = globalState;
 
   const handleSubmit = async () => {
-    const url = `${process.env.REACT_APP_API_URL}/tasks/${id}`;
+    const url = `${import.meta.env.VITE_APP_API_URL}/tasks/${id}`;
     let newDescription = rteRef.current.value;
 
     // Mantine rte gives the following html instead of "" when empty, so I change it to "" for storing it in db
@@ -163,7 +163,7 @@ const TaskEditMenu = ({ open, handleClose, task }: Props) => {
   };
 
   const deleteTask = async () => {
-    const url = `${process.env.REACT_APP_API_URL}/tasks/${id}`;
+    const url = `${import.meta.env.VITE_APP_API_URL}/tasks/${id}`;
     try {
       const deleteResponse = await axios.delete(url);
       if (deleteResponse.status === 200) {

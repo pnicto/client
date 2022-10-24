@@ -4,6 +4,7 @@ import App from "./App";
 import { AppProvider } from "./context/appContext";
 import { BrowserRouter } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import AxiosInterceptor from "./components/misc/AxiosInterceptor";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -11,13 +12,15 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <AppProvider>
-        <GoogleOAuthProvider
-          clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID as string}
-        >
-          <App />
-        </GoogleOAuthProvider>
-      </AppProvider>
+      <AxiosInterceptor>
+        <AppProvider>
+          <GoogleOAuthProvider
+            clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID as string}
+          >
+            <App />
+          </GoogleOAuthProvider>
+        </AppProvider>
+      </AxiosInterceptor>
     </BrowserRouter>
   </React.StrictMode>
 );

@@ -50,9 +50,13 @@ const Taskboard = () => {
 
       // If shared then send the userId of the owner to send the view only cards and tasks
       if (isShared && activeTaskboard?.userId) {
-        url = `${process.env.REACT_APP_API_URL}/taskCards/${activeTaskboardId}/${activeTaskboard?.userId}`;
+        url = `${
+          import.meta.env.VITE_APP_API_URL
+        }/taskCards/${activeTaskboardId}/${activeTaskboard?.userId}`;
       } else {
-        url = `${process.env.REACT_APP_API_URL}/taskCards/${activeTaskboardId}`;
+        url = `${
+          import.meta.env.VITE_APP_API_URL
+        }/taskCards/${activeTaskboardId}`;
       }
       try {
         const getResponse = await axios.get(url);

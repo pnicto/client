@@ -30,7 +30,7 @@ const ShareDialog = ({
     // Fetches all users and filters the users if they are the shared users and gets their emails for the purpose of displaying who the owner is sharing them with
     const fetchUsers = async () => {
       const getResponse: { email: string; username: string; id: number }[] = (
-        await axios.get(`${process.env.REACT_APP_API_URL}/users`)
+        await axios.get(`${import.meta.env.VITE_APP_API_URL}/users`)
       ).data.users;
 
       const users = getResponse.filter((item) => {

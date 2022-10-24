@@ -1,4 +1,4 @@
-import { ReactComponent as LandingTasksSvg } from "../assets/landingTasks.svg";
+import { ReactComponent as LandingTasksSvg } from "../assets/LandingTasks.svg";
 import TaskRoundedIcon from "@mui/icons-material/TaskRounded";
 import { Button } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";

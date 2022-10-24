@@ -71,7 +71,7 @@ const MainApp = () => {
       });
     }
     const fetchAllTasksboards = async () => {
-      const url = `${process.env.REACT_APP_API_URL}/taskboards`;
+      const url = `${import.meta.env.VITE_APP_API_URL}/taskboards`;
       try {
         const getResponse = await axios.get(url);
         const responseData: {
